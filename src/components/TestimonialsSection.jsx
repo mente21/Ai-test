@@ -207,7 +207,24 @@ const TestimonialsSection = () => {
                     </div>
                     <div>
                         <h4 style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.1rem', margin: 0 }}>{test.name}</h4>
-                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>{test.role} @ <span style={{ color: test.avatarColor }}>{test.company}</span></p>
+                        {test.handle && (
+                          <a 
+                            href={test.socialLink || '#'} 
+                            target={test.socialLink ? "_blank" : "_self"}
+                            rel="noopener noreferrer"
+                            style={{ 
+                              color: test.avatarColor, 
+                              fontSize: '0.85rem', 
+                              textDecoration: 'none',
+                              display: 'block',
+                              marginTop: '2px',
+                              fontWeight: 600,
+                              opacity: test.socialLink ? 1 : 0.8
+                            }}
+                          >
+                            {test.handle}
+                          </a>
+                        )}
                     </div>
                 </div>
               </div>

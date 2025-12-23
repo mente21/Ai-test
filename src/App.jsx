@@ -25,6 +25,8 @@ const PortfolioHome = () => {
   const { data: skills, loading: skillsLoading } = useCollection('skills');
   const { data: experience, loading: expLoading } = useCollection('experience');
   const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedEducation, setSelectedEducation] = useState(null);
+  const [selectedCertificate, setSelectedCertificate] = useState(null);
   const navigate = useNavigate();
 
   return (
@@ -35,11 +37,11 @@ const PortfolioHome = () => {
       {/* Background Blur Overlay when project is active */}
       <motion.div 
         animate={{ 
-          filter: selectedProject ? 'blur(10px) brightness(0.7)' : 'blur(0px) brightness(1)',
-          scale: selectedProject ? 0.98 : 1
+          filter: (selectedProject || selectedEducation || selectedCertificate) ? 'blur(10px) brightness(0.7)' : 'blur(0px) brightness(1)',
+          scale: (selectedProject || selectedEducation || selectedCertificate) ? 0.98 : 1
         }}
         transition={{ duration: 0.5 }}
-        style={{ pointerEvents: selectedProject ? 'none' : 'auto' }}
+        style={{ pointerEvents: (selectedProject || selectedEducation || selectedCertificate) ? 'none' : 'auto' }}
       >
 
       <HeroSection />
@@ -100,10 +102,10 @@ const PortfolioHome = () => {
         </div>
         <TechExpertise />
       </section>
+      
+      <EducationTimeline onOpenDetail={setSelectedEducation} />
 
-      <EducationTimeline />
-
-      <CertificatesSection />
+      <CertificatesSection onOpenDetail={setSelectedCertificate} />
 
       <TestimonialsSection />
 
@@ -185,83 +187,396 @@ const PortfolioHome = () => {
 
                 <div className="modal-content-grid" style={{ 
                   display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-                  gap: '40px', 
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
+                  gap: '50px', 
                   height: '100%',
                   overflowY: 'auto',
                   paddingRight: '10px'
                 }}>
-                  <motion.div 
-                    layoutId={`image-${selectedProject.id || projects.indexOf(selectedProject)}`}
-                    style={{
-                       width: '100%',
-                       height: 'max(300px, 40vh)',
-                       borderRadius: '24px',
-                       overflow: 'hidden',
-                       boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
-                    }}
-                  >
-                    <img 
-                      src={selectedProject.imageUrl || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200"} 
-                      alt={selectedProject.title} 
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                  </motion.div>
+                  {/* Left Column: Media Slider */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <motion.div 
+                      layoutId={`image-${selectedProject.id || projects.indexOf(selectedProject)}`}
+                      style={{
+                         width: '100%',
+                         height: '450px',
+                         borderRadius: '24px',
+                         overflow: 'hidden',
+                         boxShadow: '0 30px 60px rgba(0,0,0,0.4)',
+                         position: 'relative'
+                      }}
+                    >
+                      {/* Horizontal Slider Implementation */}
+                      <div className="custom-slider" style={{
+                        display: 'flex',
+                        overflowX: 'auto',
+                        scrollSnapType: 'x mandatory',
+                        width: '100%',
+                        height: '100%',
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none'
+                      }}>
+                        {[selectedProject.imageUrl, ...(selectedProject.gallery || [])].filter(Boolean).map((img, i) => (
+                          <div key={i} style={{ 
+                            minWidth: '100%', 
+                            height: '100%', 
+                            scrollSnapAlign: 'start',
+                            position: 'relative'
+                          }}>
+                            <img 
+                              src={img} 
+                              alt={`${selectedProject.title} screenshot ${i + 1}`} 
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                            {i > 0 && <div style={{ position: 'absolute', top: '20px', left: '20px', padding: '6px 12px', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', borderRadius: '100px', fontSize: '0.6rem', color: 'white', letterSpacing: '2px', fontWeight: 800 }}>IMAGE {i + 1}</div>}
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Slider Instruction Overlay */}
+                      <div style={{ position: 'absolute', bottom: '20px', right: '20px', display: 'flex', gap: '10px' }}>
+                        <div style={{ padding: '8px 15px', background: 'rgba(255,107,0,0.9)', borderRadius: '100px', color: 'black', fontSize: '0.65rem', fontWeight: 900, letterSpacing: '1px' }}>DRAG OR SCROLL →</div>
+                      </div>
+                    </motion.div>
+                    
+                    {/* Visual Indicators for Gallery */}
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                         {[selectedProject.imageUrl, ...(selectedProject.gallery || [])].filter(Boolean).map((_, i) => (
+                           <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: i === 0 ? 'var(--accent-primary)' : 'var(--border-color)' }}></div>
+                         ))}
+                    </div>
+                  </div>
 
+                  {/* Right Column: Project Details & Buttons */}
                   <div style={{ display: 'flex', flexDirection: 'column', padding: '10px 0 30px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
-                       <div style={{ padding: '6px 16px', borderRadius: '100px', background: 'var(--accent-primary)', color: 'white', fontSize: '0.65rem', fontWeight: 900, letterSpacing: '2px', textTransform: 'uppercase' }}>Case Study</div>
+                       <div style={{ padding: '6px 16px', borderRadius: '100px', background: 'rgba(255,107,0,0.1)', border: '1px solid var(--accent-primary)', color: 'var(--accent-primary)', fontSize: '0.65rem', fontWeight: 900, letterSpacing: '2px', textTransform: 'uppercase' }}>INDUSTRIAL CASE STUDY</div>
                     </div>
                     
                     <motion.h2 
                       layoutId={`title-${selectedProject.id || projects.indexOf(selectedProject)}`}
-                      style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontFamily: 'Anton', color: 'var(--text-primary)', lineHeight: 1.1, marginBottom: '20px' }}
+                      style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontFamily: 'Anton', color: 'var(--text-primary)', lineHeight: 1, marginBottom: '24px', letterSpacing: '1px' }}
                     >
                       {selectedProject.title}
                     </motion.h2>
+                    <div style={{ width: '60px', height: '4px', background: 'var(--accent-primary)', marginBottom: '30px' }}></div>
 
                     <motion.p 
                       layoutId={`desc-${selectedProject.id || projects.indexOf(selectedProject)}`}
-                      style={{ fontSize: '1.05rem', color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: '30px', fontWeight: 300 }}
+                      style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '40px', fontWeight: 300, opacity: 0.9 }}
                     >
                       {selectedProject.desc}
                     </motion.p>
 
                     <div style={{ marginTop: 'auto' }}>
-                       <div style={{ marginBottom: '32px' }}>
-                          <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '12px', fontWeight: 800 }}>Engineered With</div>
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                             {selectedProject.tags?.map((tag, it) => (
-                               <span key={it} style={{ padding: '6px 14px', background: 'var(--border-color)', border: '1px solid var(--border-color)', borderRadius: '100px', fontSize: '0.75rem', color: 'var(--text-primary)', fontWeight: 600 }}>{tag}</span>
+                       <div style={{ marginBottom: '40px' }}>
+                          <div style={{ fontSize: '0.65rem', color: 'var(--accent-primary)', letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '16px', fontWeight: 900 }}>SYSTEM ARCHITECTURE</div>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                             {(selectedProject.tags || selectedProject.tech)?.map((tag, it) => (
+                               <span key={it} style={{ padding: '8px 18px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)', borderRadius: '10px', fontSize: '0.8rem', color: 'var(--text-primary)', fontWeight: 500, letterSpacing: '0.5px' }}>{tag}</span>
                              ))}
                           </div>
                        </div>
 
-                       <motion.a 
-                         href={selectedProject.link}
-                         target="_blank"
-                         whileHover={{ scale: 1.02, backgroundColor: 'var(--accent-primary)', color: 'white' }}
-                         whileTap={{ scale: 0.98 }}
-                         style={{
-                           width: '100%',
-                           padding: '18px',
-                           background: 'var(--text-primary)',
-                           color: 'var(--bg-color)',
-                           borderRadius: '14px',
-                           display: 'flex',
-                           alignItems: 'center',
-                           justifyContent: 'center',
-                           gap: '12px',
-                           textDecoration: 'none',
-                           fontSize: '0.9rem',
-                           fontWeight: 900,
-                           fontFamily: 'Anton',
-                           letterSpacing: '2px',
-                           transition: 'all 0.3s ease'
-                         }}
-                       >
-                         LAUNCH PROJECT <ExternalLink size={18} />
-                       </motion.a>
+                       {/* Action Buttons Hub */}
+                       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                          <motion.a 
+                            href={selectedProject.link}
+                            target="_blank"
+                            whileHover={{ scale: 1.02, backgroundColor: 'var(--accent-primary)', color: 'black' }}
+                            whileTap={{ scale: 0.98 }}
+                            style={{
+                              width: '100%',
+                              padding: '20px',
+                              background: 'var(--text-primary)',
+                              color: 'var(--bg-color)',
+                              borderRadius: '16px',
+                              fontFamily: 'Anton',
+                              fontSize: '1.1rem',
+                              letterSpacing: '4px',
+                              fontWeight: 900,
+                              textTransform: 'uppercase',
+                              textAlign: 'center',
+                              textDecoration: 'none',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '12px',
+                              boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+                            }}
+                          >
+                            LAUNCH SYSTEM <ExternalLink size={20} />
+                          </motion.a>
+
+                          {selectedProject.github && (
+                            <motion.a 
+                              href={selectedProject.github}
+                              target="_blank"
+                              whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}
+                              whileTap={{ scale: 0.98 }}
+                              style={{
+                                width: '100%',
+                                padding: '18px',
+                                background: 'transparent',
+                                color: 'var(--text-primary)',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: '16px',
+                                fontFamily: 'Anton',
+                                fontSize: '1rem',
+                                letterSpacing: '3px',
+                                fontWeight: 900,
+                                textTransform: 'uppercase',
+                                textAlign: 'center',
+                                textDecoration: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '12px',
+                                transition: 'all 0.3s ease'
+                              }}
+                            >
+                              SOURCE REPOSITORY <Github size={20} />
+                            </motion.a>
+                          )}
+                       </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Education Detail Modal - Lifted for proper centering */}
+      <AnimatePresence>
+        {selectedEducation && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedEducation(null)}
+              style={{
+                position: 'fixed', inset: 0,
+                background: 'rgba(0,0,0,0.85)',
+                backdropFilter: 'blur(20px)',
+                zIndex: 3000,
+                cursor: 'zoom-out'
+              }}
+            />
+            
+            <div style={{
+               position: 'fixed', inset: 0,
+               display: 'flex', alignItems: 'center', justifyContent: 'center',
+               zIndex: 3001, pointerEvents: 'none', padding: '40px'
+            }}>
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 30 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 30 }}
+                style={{
+                  width: 'min(1000px, 95vw)',
+                  height: 'min(750px, 85vh)',
+                  background: 'var(--card-bg)',
+                  borderRadius: '40px',
+                  border: `1.5px solid ${selectedEducation.color || 'var(--accent-primary)'}`,
+                  padding: '40px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '30px',
+                  boxShadow: '0 50px 100px rgba(0,0,0,0.5)',
+                  overflow: 'hidden',
+                  pointerEvents: 'auto',
+                  position: 'relative'
+                }}
+              >
+                <button 
+                  onClick={() => setSelectedEducation(null)}
+                  style={{
+                    position: 'absolute', top: '25px', right: '25px',
+                    background: 'var(--bg-color)', border: '1px solid var(--border-color)',
+                    borderRadius: '50%', width: '50px', height: '50px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--text-primary)', cursor: 'pointer', zIndex: 10
+                  }}
+                >
+                  <X size={24} />
+                </button>
+
+                <div className="modal-content-grid" style={{ 
+                  display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
+                  gap: '50px', height: '100%', overflowY: 'auto'
+                }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div style={{
+                         width: '100%', height: '450px',
+                         borderRadius: '24px', overflow: 'hidden',
+                         boxShadow: '0 30px 60px rgba(0,0,0,0.4)', position: 'relative'
+                    }}>
+                      <div className="custom-slider" style={{
+                        display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory',
+                        width: '100%', height: '100%', scrollbarWidth: 'none'
+                      }}>
+                        {[selectedEducation.image, ...(selectedEducation.gallery || [])].filter(Boolean).map((img, i) => (
+                          <div key={i} style={{ minWidth: '100%', height: '100%', scrollSnapAlign: 'start', position: 'relative' }}>
+                            <img src={img} alt="Academic detail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                         {[selectedEducation.image, ...(selectedEducation.gallery || [])].filter(Boolean).map((_, i) => (
+                           <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: i === 0 ? selectedEducation.color : 'var(--border-color)' }}></div>
+                         ))}
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', padding: '10px 0' }}>
+                    <div style={{ fontSize: '0.65rem', color: selectedEducation.color, letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '16px', fontWeight: 900 }}>ACADEMIC RECORD</div>
+                    <h2 style={{ fontSize: '3rem', fontFamily: 'Anton', color: 'var(--text-primary)', lineHeight: 1.1, marginBottom: '20px' }}>
+                      {selectedEducation.degree}
+                    </h2>
+                    <div style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: '30px', fontWeight: 500 }}>
+                      {selectedEducation.school}
+                    </div>
+                    <div style={{ width: '60px', height: '4px', background: selectedEducation.color, marginBottom: '30px' }}></div>
+                    <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '40px', opacity: 0.9 }}>
+                      {selectedEducation.desc || "Comprehensive institutional training focusing on advanced computational concepts."}
+                    </p>
+                    <div style={{ marginTop: 'auto', padding: '20px', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: `1px dashed ${selectedEducation.color}44` }}>
+                      <div style={{ fontSize: '0.7rem', color: selectedEducation.color, fontWeight: 900, letterSpacing: '2px', marginBottom: '5px' }}>VALIDATION TIMESTAMP</div>
+                      <div style={{ fontSize: '1rem', color: 'var(--text-primary)', fontWeight: 600 }}>{selectedEducation.year}</div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Certificate Detail Modal - Mirroring Projects/Education */}
+      <AnimatePresence>
+        {selectedCertificate && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedCertificate(null)}
+              style={{
+                position: 'fixed', inset: 0,
+                background: 'rgba(0,0,0,0.85)',
+                backdropFilter: 'blur(20px)',
+                zIndex: 3000,
+                cursor: 'zoom-out'
+              }}
+            />
+            
+            <div style={{
+               position: 'fixed', inset: 0,
+               display: 'flex', alignItems: 'center', justifyContent: 'center',
+               zIndex: 3001, pointerEvents: 'none', padding: '40px'
+            }}>
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 30 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 30 }}
+                style={{
+                  width: 'min(1000px, 95vw)',
+                  height: 'min(750px, 85vh)',
+                  background: 'var(--card-bg)',
+                  borderRadius: '40px',
+                  border: `1.5px solid ${selectedCertificate.color || 'var(--accent-primary)'}`,
+                  padding: '40px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '30px',
+                  boxShadow: '0 50px 100px rgba(0,0,0,0.5)',
+                  overflow: 'hidden',
+                  pointerEvents: 'auto',
+                  position: 'relative'
+                }}
+              >
+                <button 
+                  onClick={() => setSelectedCertificate(null)}
+                  style={{
+                    position: 'absolute', top: '25px', right: '25px',
+                    background: 'var(--bg-color)', border: '1px solid var(--border-color)',
+                    borderRadius: '50%', width: '50px', height: '50px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--text-primary)', cursor: 'pointer', zIndex: 10
+                  }}
+                >
+                  <X size={24} />
+                </button>
+
+                <div className="modal-content-grid" style={{ 
+                  display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', 
+                  gap: '50px', height: '100%', overflowY: 'auto'
+                }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div style={{
+                         width: '100%', height: '450px',
+                         borderRadius: '24px', overflow: 'hidden',
+                         boxShadow: '0 30px 60px rgba(0,0,0,0.4)', position: 'relative'
+                    }}>
+                      <div className="custom-slider" style={{
+                        display: 'flex', overflowX: 'auto', scrollSnapType: 'x mandatory',
+                        width: '100%', height: '100%', scrollbarWidth: 'none'
+                      }}>
+                        {[selectedCertificate.imageUrl, ...(selectedCertificate.gallery || [])].filter(Boolean).map((img, i) => (
+                          <div key={i} style={{ minWidth: '100%', height: '100%', scrollSnapAlign: 'start', position: 'relative' }}>
+                            <img src={img} alt="Certificate detail" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                         {[selectedCertificate.imageUrl, ...(selectedCertificate.gallery || [])].filter(Boolean).map((_, i) => (
+                           <div key={i} style={{ width: '8px', height: '8px', borderRadius: '50%', background: i === 0 ? selectedCertificate.color : 'var(--border-color)' }}></div>
+                         ))}
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', padding: '10px 0' }}>
+                    <div style={{ fontSize: '0.65rem', color: selectedCertificate.color, letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '16px', fontWeight: 900 }}>PROFESSIONAL VALIDATION</div>
+                    <h2 style={{ fontSize: '3rem', fontFamily: 'Anton', color: 'var(--text-primary)', lineHeight: 1.1, marginBottom: '20px' }}>
+                      {selectedCertificate.title}
+                    </h2>
+                    <div style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: '30px', fontWeight: 500 }}>
+                      {selectedCertificate.issuer}
+                    </div>
+                    <div style={{ width: '60px', height: '4px', background: selectedCertificate.color, marginBottom: '30px' }}></div>
+                    <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '40px', opacity: 0.9 }}>
+                      {selectedCertificate.desc || selectedCertificate.description || "Official certification validating professional competency in industry-standard technologies and methodologies."}
+                    </p>
+
+                    <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                       {selectedCertificate.link && (
+                         <motion.a 
+                           href={selectedCertificate.link}
+                           target="_blank"
+                           whileHover={{ scale: 1.02, backgroundColor: selectedCertificate.color, color: 'white' }}
+                           whileTap={{ scale: 0.98 }}
+                           style={{
+                             width: '100%', padding: '20px',
+                             background: 'var(--text-primary)', color: 'var(--bg-color)',
+                             borderRadius: '16px', fontFamily: 'Anton', fontSize: '1.1rem',
+                             letterSpacing: '3px', fontWeight: 900, textTransform: 'uppercase',
+                             textAlign: 'center', textDecoration: 'none', display: 'flex',
+                             alignItems: 'center', justifyContent: 'center', gap: '12px'
+                           }}
+                         >
+                           VERIFY CREDENTIAL <ExternalLink size={20} />
+                         </motion.a>
+                       )}
+                       
+                       <div style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: `1px dashed ${selectedCertificate.color}44` }}>
+                         <div style={{ fontSize: '0.7rem', color: selectedCertificate.color, fontWeight: 900, letterSpacing: '2px', marginBottom: '5px' }}>ISSUE DATE</div>
+                         <div style={{ fontSize: '1rem', color: 'var(--text-primary)', fontWeight: 600 }}>{selectedCertificate.date}</div>
+                       </div>
                     </div>
                   </div>
                 </div>

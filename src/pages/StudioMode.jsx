@@ -115,7 +115,7 @@ const StudioMode = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleFileUpload = async (e) => {
+  const handleFileUpload = async (e, field = 'imageUrl') => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -124,15 +124,15 @@ const StudioMode = () => {
     
     // Check if Cloudinary is configured
     if (CLOUDINARY_CLOUD_NAME && CLOUDINARY_UPLOAD_PRESET) {
-        console.log("Starting Cloudinary upload for:", file.name);
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        console.log(`Starting Cloudinary upload for ${field}:`, file.name);
+        const fData = new FormData();
+        fData.append('file', file);
+        fData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
         try {
             const response = await fetch(
                 `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-                { method: 'POST', body: formData }
+                { method: 'POST', body: fData }
             );
 
             if (!response.ok) {
@@ -142,18 +142,24 @@ const StudioMode = () => {
 
             const data = await response.json();
             console.log("Cloudinary Upload Success:", data.secure_url);
-            handleInputChange('imageUrl', data.secure_url);
+            
+            if (field === 'gallery') {
+              const currentGallery = Array.isArray(formData.gallery) ? formData.gallery : [];
+              handleInputChange('gallery', [...currentGallery, data.secure_url]);
+            } else {
+              handleInputChange(field, data.secure_url);
+            }
+            
             setUploadProgress(100);
             setUploading(false);
             return;
         } catch (err) {
             console.error("Cloudinary Error, falling back to Firebase:", err);
-            // Fall through to Firebase if Cloudinary fails
         }
     }
 
-    // FALLBACK: Use Firebase Storage (Native & already configured)
-    console.log("Starting Firebase Storage upload for:", file.name);
+    // FALLBACK: Use Firebase Storage
+    console.log(`Starting Firebase Storage upload for ${field}:`, file.name);
     try {
         const storageRef = ref(storage, `studio/${Date.now()}_${file.name}`);
         const uploadTask = uploadBytesResumable(storageRef, file);
@@ -164,20 +170,23 @@ const StudioMode = () => {
                 setUploadProgress(progress);
             }, 
             (error) => {
-                console.error("Firebase Storage Error:", error);
-                alert("Upload Failed: " + error.message);
+                console.error("Firebase Storage Upload Error:", error);
+                alert("Upload failed: " + error.message);
                 setUploading(false);
             }, 
             async () => {
                 const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                console.log("Firebase Upload Success:", downloadURL);
-                handleInputChange('imageUrl', downloadURL);
+                if (field === 'gallery') {
+                  const currentGallery = Array.isArray(formData.gallery) ? formData.gallery : [];
+                  handleInputChange('gallery', [...currentGallery, downloadURL]);
+                } else {
+                  handleInputChange(field, downloadURL);
+                }
                 setUploading(false);
             }
         );
-    } catch (err) {
-        console.error("Critical Upload Error:", err);
-        alert("Critical Upload Error: " + err.message);
+    } catch (error) {
+        console.error("Upload initialization error:", error);
         setUploading(false);
     }
   };
@@ -249,63 +258,132 @@ const StudioMode = () => {
 
     if (selectedCollection === 'projects') {
       return (
-        <>
-          {commonFields}
-          <div className="form-group">
-            <label>Technologies (Comma separated)</label>
-            <input 
-              className="studio-input" 
-              value={Array.isArray(formData.tech) ? formData.tech.join(', ') : formData.tech || ''} 
-              onChange={e => handleInputChange('tech', e.target.value.split(',').map(s => s.trim()))}
-              placeholder="React, Firebase, etc."
-            />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
+          {/* Left Column: Basic Info */}
+          <div>
+            {commonFields}
+            <div className="form-group" style={{ marginTop: '20px' }}>
+              <label>Technologies (Comma separated)</label>
+              <input 
+                className="studio-input" 
+                value={Array.isArray(formData.tech) ? formData.tech.join(', ') : formData.tech || ''} 
+                onChange={e => handleInputChange('tech', e.target.value.split(',').map(s => s.trim()))}
+                placeholder="React, Firebase, Tailwind..."
+              />
+            </div>
+            <div className="form-group" style={{ marginTop: '20px' }}>
+              <label>Live Production Link</label>
+              <input 
+                className="studio-input" 
+                value={formData.link || ''} 
+                onChange={e => handleInputChange('link', e.target.value)}
+                placeholder="https://your-app.com"
+              />
+            </div>
+            <div className="form-group">
+              <label>GitHub Repository Link</label>
+              <input 
+                className="studio-input" 
+                value={formData.github || ''} 
+                onChange={e => handleInputChange('github', e.target.value)}
+                placeholder="https://github.com/..."
+              />
+            </div>
           </div>
-          <div className="form-group">
-            <label>Live Link</label>
-            <input 
-              className="studio-input" 
-              value={formData.link || ''} 
-              onChange={e => handleInputChange('link', e.target.value)}
-              placeholder="https://..."
-            />
+
+          {/* Right Column: Asset Management */}
+          <div>
+            <div style={{ 
+              padding: '30px', 
+              background: 'rgba(255,107,0,0.03)', 
+              borderRadius: '24px', 
+              border: '1px solid rgba(255,107,0,0.1)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px'
+            }}>
+              <label style={{ fontSize: '0.7rem', color: 'var(--accent-primary)', fontWeight: 900, letterSpacing: '4px' }}>INDUSTRIAL ASSET HUB</label>
+              
+              {renderImageUpload('imageUrl', 'System Thumbnail (Main View)')}
+              
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '10px 0' }}></div>
+              
+              {renderGalleryManager()}
+            </div>
           </div>
-          <div className="form-group">
-            <label>GitHub Link</label>
-            <input 
-              className="studio-input" 
-              value={formData.github || ''} 
-              onChange={e => handleInputChange('github', e.target.value)}
-              placeholder="https://github.com/..."
-            />
-          </div>
-          {renderImageUpload()}
-        </>
+        </div>
       );
     }
 
     if (selectedCollection === 'certificates') {
       return (
         <>
-          {commonFields}
-          <div className="form-group">
-            <label>Issuer</label>
-            <input 
-              className="studio-input" 
-              value={formData.issuer || ''} 
-              onChange={e => handleInputChange('issuer', e.target.value)}
-              placeholder="e.g. Google, Udemy"
-            />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
+            <div>
+              <div className="form-group">
+                <label>Certificate Title</label>
+                <input 
+                  className="studio-input" 
+                  value={formData.title || ''} 
+                  onChange={e => handleInputChange('title', e.target.value)}
+                  placeholder="e.g. AWS Solutions Architect"
+                />
+              </div>
+              <div className="form-group" style={{ marginTop: '20px' }}>
+                <label>Issuing Organization</label>
+                <input 
+                  className="studio-input" 
+                  value={formData.issuer || ''} 
+                  onChange={e => handleInputChange('issuer', e.target.value)}
+                  placeholder="e.g. Amazon Web Services"
+                />
+              </div>
+              <div className="form-group" style={{ marginTop: '20px' }}>
+                <label>Verification / Credential Link</label>
+                <input 
+                  className="studio-input" 
+                  value={formData.link || ''} 
+                  onChange={e => handleInputChange('link', e.target.value)}
+                  placeholder="https://bcert.me/..."
+                />
+              </div>
+              <div className="form-group" style={{ marginTop: '20px' }}>
+                <label>Issue Date</label>
+                <input 
+                  className="studio-input" 
+                  type="date"
+                  value={formData.date || ''} 
+                  onChange={e => handleInputChange('date', e.target.value)}
+                />
+              </div>
+              <div className="form-group" style={{ marginTop: '20px' }}>
+                <label>Description / Learning Objectives</label>
+                <textarea 
+                  className="studio-input" 
+                  value={formData.desc || ''} 
+                  onChange={e => handleInputChange('desc', e.target.value)}
+                  style={{ minHeight: '120px' }}
+                />
+              </div>
+            </div>
+
+            <div>
+               <div style={{ 
+                padding: '30px', 
+                background: 'rgba(99, 102, 241, 0.03)', 
+                borderRadius: '24px', 
+                border: '1px solid rgba(99, 102, 241, 0.1)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px'
+              }}>
+                <label style={{ fontSize: '0.7rem', color: '#6366f1', fontWeight: 900, letterSpacing: '4px' }}>CERTIFICATE ASSETS</label>
+                {renderImageUpload('imageUrl', 'Certificate Badge (Main)')}
+                <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '10px 0' }}></div>
+                {renderGalleryManager()}
+              </div>
+            </div>
           </div>
-          <div className="form-group">
-            <label>Date</label>
-            <input 
-              className="studio-input" 
-              type="date"
-              value={formData.date || ''} 
-              onChange={e => handleInputChange('date', e.target.value)}
-            />
-          </div>
-          {renderImageUpload()}
         </>
       );
     }
@@ -349,25 +427,41 @@ const StudioMode = () => {
               required
             />
           </div>
-          <div className="form-group">
-            <label>Detailed Description (Industrial System)</label>
-            <textarea 
-              className="studio-input" 
-              value={formData.detailedDesc || ''} 
-              onChange={e => handleInputChange('detailedDesc', e.target.value)}
-              placeholder="The visual map above represents..."
-              style={{ minHeight: '120px' }}
-            />
+          <div className="form-group" style={{ border: '1px solid rgba(99, 102, 241, 0.2)', padding: '15px', borderRadius: '12px', background: 'rgba(99, 102, 241, 0.05)' }}>
+            <label style={{ color: 'var(--accent-primary)', fontSize: '0.7rem' }}>DYNAMIC ECOSYSTEM DISPLAY</label>
+            <p style={{ fontSize: '0.75rem', opacity: 0.6, marginBottom: '10px' }}>Only the first skill with these fields will determine the footer layout.</p>
+            <div className="form-group" style={{ marginBottom: '15px' }}>
+              <label>System Title</label>
+              <input 
+                className="studio-input" 
+                value={formData.systemTitle || ''} 
+                onChange={e => handleInputChange('systemTitle', e.target.value)}
+                placeholder="e.g. THE INDUSTRIAL ECOSYSTEM"
+              />
+            </div>
+            <div className="form-group">
+              <label>Detailed Description</label>
+              <textarea 
+                className="studio-input" 
+                value={formData.detailedDesc || ''} 
+                onChange={e => handleInputChange('detailedDesc', e.target.value)}
+                placeholder="The visual map above represents..."
+                style={{ minHeight: '100px' }}
+              />
+            </div>
           </div>
           <div className="form-group">
-            <label>Level (0-100)</label>
-            <input 
-              className="studio-input" 
-              type="number"
-              value={formData.level || ''} 
+            <label>Seniority Status</label>
+            <select 
+              className="studio-input"
+              value={formData.level || '65'} 
               onChange={e => handleInputChange('level', e.target.value)}
-              placeholder="e.g. 90"
-            />
+              style={{ cursor: 'pointer' }}
+            >
+              <option value="95">ARCHITECT (Mastery)</option>
+              <option value="85">SENIOR (Advanced)</option>
+              <option value="65">EXPERT (Competent)</option>
+            </select>
           </div>
           <div className="form-group">
             <label>Category</label>
@@ -389,17 +483,31 @@ const StudioMode = () => {
 
     if (selectedCollection === 'home') {
       return (
-        <>
-          <div className="form-group">
-            <label>Main Title</label>
-            <input className="studio-input" value={formData.title || ''} onChange={e => handleInputChange('title', e.target.value)} placeholder="CREATIVE ENGINEER" />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
+          <div>
+            <div className="form-group">
+              <label>Main Title</label>
+              <input className="studio-input" value={formData.title || ''} onChange={e => handleInputChange('title', e.target.value)} placeholder="CREATIVE ENGINEER" />
+            </div>
+            <div className="form-group" style={{ marginTop: '20px' }}>
+              <label>Name / Roles (Comma separated)</label>
+              <input className="studio-input" value={formData.roles || ''} onChange={e => handleInputChange('roles', e.target.value)} placeholder="FRONTEND ARCHITECT, UI/UX DESIGNER" />
+            </div>
+            <div className="form-group" style={{ marginTop: '20px' }}>
+              <label>Description / Mission Statement</label>
+              <textarea className="studio-input" value={formData.desc || ''} onChange={e => handleInputChange('desc', e.target.value)} placeholder="Specializing in premium high-performance digital architectures..." style={{ minHeight: '120px' }} />
+            </div>
           </div>
-          <div className="form-group">
-            <label>Name / Roles (Comma separated)</label>
-            <input className="studio-input" value={formData.roles || ''} onChange={e => handleInputChange('roles', e.target.value)} placeholder="FRONTEND ARCHITECT, UI/UX DESIGNER" />
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ padding: '20px', background: 'rgba(255,b,0,0.02)', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+              {renderImageUpload('imageUrl', 'Hero Main Image')}
+            </div>
+            <div style={{ padding: '20px', background: 'rgba(255,b,0,0.02)', borderRadius: '24px', border: '1px solid var(--border-color)' }}>
+              {renderImageUpload('sidebarImage', 'Sidebar Profile Image')}
+            </div>
           </div>
-          {renderImageUpload()}
-        </>
+        </div>
       );
     }
 
@@ -420,39 +528,93 @@ const StudioMode = () => {
     }
 
     if (selectedCollection === 'education') {
-       return (
-         <>
-           <div className="form-group">
-             <label>School Name</label>
-             <input className="studio-input" value={formData.school || ''} onChange={e => handleInputChange('school', e.target.value)} />
-           </div>
-           <div className="form-group">
-             <label>Degree / Title</label>
-             <input className="studio-input" value={formData.title || ''} onChange={e => handleInputChange('title', e.target.value)} />
-           </div>
-           <div className="form-group">
-             <label>Description</label>
-             <textarea className="studio-input" value={formData.desc || ''} onChange={e => handleInputChange('desc', e.target.value)} />
-           </div>
-           {renderImageUpload()}
-         </>
-       );
+      return (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
+          {/* Left Column: Academic Info */}
+          <div>
+            <div className="form-group">
+              <label>School / University Name</label>
+              <input 
+                className="studio-input" 
+                value={formData.school || ''} 
+                onChange={e => handleInputChange('school', e.target.value)}
+                placeholder="e.g. Stanford University"
+              />
+            </div>
+            <div className="form-group" style={{ marginTop: '20px' }}>
+              <label>Degree / Qualification Title</label>
+              <input 
+                className="studio-input" 
+                value={formData.degree || ''} 
+                onChange={e => handleInputChange('degree', e.target.value)}
+                placeholder="e.g. B.Sc. in Computer Science"
+              />
+            </div>
+            <div className="form-group" style={{ marginTop: '20px' }}>
+              <label>Academic Period</label>
+              <input 
+                className="studio-input" 
+                value={formData.year || ''} 
+                onChange={e => handleInputChange('year', e.target.value)}
+                placeholder="e.g. 2020 - 2024"
+              />
+            </div>
+            <div className="form-group" style={{ marginTop: '20px' }}>
+              <label>Academic Description / Highlights</label>
+              <textarea 
+                className="studio-input" 
+                value={formData.desc || ''} 
+                onChange={e => handleInputChange('desc', e.target.value)}
+                placeholder="Focus on AI, High-Performance Systems..."
+                style={{ minHeight: '120px' }}
+              />
+            </div>
+          </div>
+
+          {/* Right Column: Asset Management */}
+          <div>
+            <div style={{ 
+              padding: '30px', 
+              background: 'rgba(255,107,0,0.03)', 
+              borderRadius: '24px', 
+              border: '1px solid rgba(255,107,0,0.1)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px'
+            }}>
+              <label style={{ fontSize: '0.7rem', color: 'var(--accent-primary)', fontWeight: 900, letterSpacing: '4px' }}>INDUSTRIAL ASSET HUB</label>
+              
+              {renderImageUpload('image', 'Academic Badge / Main Photo')}
+              
+              <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '10px 0' }}></div>
+              
+              {renderGalleryManager()}
+            </div>
+          </div>
+        </div>
+      );
     }
 
     if (selectedCollection === 'testimonials') {
       return (
         <>
           <div className="form-group">
-            <label>Name</label>
-            <input className="studio-input" value={formData.name || ''} onChange={e => handleInputChange('name', e.target.value)} />
+            <label>Full Name</label>
+            <input className="studio-input" value={formData.name || ''} onChange={e => handleInputChange('name', e.target.value)} placeholder="e.g. Meles Tesfaye" />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div className="form-group">
+              <label>Social Handle (e.g. @meles)</label>
+              <input className="studio-input" value={formData.handle || ''} onChange={e => handleInputChange('handle', e.target.value)} placeholder="@username" />
+            </div>
+            <div className="form-group">
+              <label>Social Profile Link</label>
+              <input className="studio-input" value={formData.socialLink || ''} onChange={e => handleInputChange('socialLink', e.target.value)} placeholder="https://..." />
+            </div>
           </div>
           <div className="form-group">
-            <label>Work / Company</label>
-            <input className="studio-input" value={formData.work || ''} onChange={e => handleInputChange('work', e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label>Quote</label>
-            <textarea className="studio-input" value={formData.quote || ''} onChange={e => handleInputChange('quote', e.target.value)} />
+            <label>Testimonial Quote</label>
+            <textarea className="studio-input" value={formData.quote || ''} onChange={e => handleInputChange('quote', e.target.value)} placeholder="Their work was exceptional..." style={{ minHeight: '120px' }} />
           </div>
         </>
       );
@@ -466,12 +628,32 @@ const StudioMode = () => {
             <input className="studio-input" value={formData.email || ''} onChange={e => handleInputChange('email', e.target.value)} />
           </div>
           <div className="form-group">
+            <label>Phone Number</label>
+            <input className="studio-input" value={formData.phone || ''} onChange={e => handleInputChange('phone', e.target.value)} placeholder="+1 234 567 890" />
+          </div>
+          <div className="form-group">
+            <label>Location</label>
+            <input className="studio-input" value={formData.location || ''} onChange={e => handleInputChange('location', e.target.value)} placeholder="London, UK" />
+          </div>
+          <div className="form-group">
             <label>Github URL</label>
             <input className="studio-input" value={formData.github || ''} onChange={e => handleInputChange('github', e.target.value)} />
           </div>
           <div className="form-group">
             <label>Linkedin URL</label>
             <input className="studio-input" value={formData.linkedin || ''} onChange={e => handleInputChange('linkedin', e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label>Youtube URL</label>
+            <input className="studio-input" value={formData.youtube || ''} onChange={e => handleInputChange('youtube', e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label>Facebook URL</label>
+            <input className="studio-input" value={formData.facebook || ''} onChange={e => handleInputChange('facebook', e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label>Fiverr URL</label>
+            <input className="studio-input" value={formData.fiverr || ''} onChange={e => handleInputChange('fiverr', e.target.value)} />
           </div>
           <div className="form-group">
             <label>Instagram URL</label>
@@ -481,6 +663,14 @@ const StudioMode = () => {
             <label>Twitter URL</label>
             <input className="studio-input" value={formData.twitter || ''} onChange={e => handleInputChange('twitter', e.target.value)} />
           </div>
+          <div className="form-group">
+            <label>TikTok URL</label>
+            <input className="studio-input" value={formData.tiktok || ''} onChange={e => handleInputChange('tiktok', e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label>Telegram URL</label>
+            <input className="studio-input" value={formData.telegram || ''} onChange={e => handleInputChange('telegram', e.target.value)} />
+          </div>
         </>
       );
     }
@@ -488,61 +678,123 @@ const StudioMode = () => {
     return commonFields;
   };
 
-  const renderImageUpload = () => (
+  const renderImageUpload = (field = 'imageUrl', label = 'Project / Certificate Image') => (
     <div className="form-group">
-      <label>Project / Certificate Image</label>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        {/* Option A: Manual URL Input (Works without Paid Plan) */}
-        <input 
-          className="studio-input" 
-          placeholder="Paste Image URL (e.g. https://...)" 
-          value={formData.imageUrl || ''} 
-          onChange={e => handleInputChange('imageUrl', e.target.value)}
-        />
-        
-        <div style={{ textAlign: 'center', opacity: 0.5, fontSize: '0.8rem' }}>— OR —</div>
-
-        {/* Option B: Upload (Requires Firebase Storage Setup) */}
-        <div 
-          style={{
-            border: '2px dashed rgba(255, 255, 255, 0.1)',
-            borderRadius: '12px',
-            padding: '20px',
-            textAlign: 'center',
-            background: 'rgba(255, 255, 255, 0.02)',
-            position: 'relative',
-            cursor: 'pointer'
-          }}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            style={{ display: 'none' }} 
-            accept="image/*"
-            onChange={handleFileUpload}
-          />
-          
-          {uploading ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-              <Loader2 className="animate-spin" size={32} color="#6366f1" />
-              <p>Uploading... {Math.round(uploadProgress)}%</p>
-            </div>
-          ) : formData.imageUrl && formData.imageUrl.startsWith('http') ? (
-            <div style={{ position: 'relative' }}>
-              <img 
-                src={formData.imageUrl} 
-                alt="Preview" 
-                style={{ width: '100%', maxHeight: '120px', objectFit: 'contain', borderRadius: '8px' }} 
-              />
-              <p style={{ marginTop: '10px', fontSize: '0.8rem', color: '#6366f1' }}>Current visual preview</p>
-            </div>
+      <label>{label}</label>
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: '20px', 
+        background: 'rgba(255,255,255,0.02)', 
+        padding: '20px', 
+        borderRadius: '16px',
+        border: '1px solid rgba(255,255,255,0.05)'
+      }}>
+        {/* Preview Thumbnail */}
+        <div style={{ 
+          width: '100px', 
+          height: '100px', 
+          borderRadius: '12px', 
+          background: 'rgba(0,0,0,0.3)', 
+          overflow: 'hidden', 
+          flexShrink: 0,
+          border: '1px solid var(--border-color)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          {formData[field] ? (
+            <img src={formData[field]} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
-            <div>
-              <Upload size={32} style={{ opacity: 0.3, marginBottom: '10px' }} />
-              <p style={{ opacity: 0.6 }}>Click to upload file (Cloudinary Free)</p>
-            </div>
+            <ImageIcon size={30} style={{ opacity: 0.2 }} />
           )}
+        </div>
+
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <input 
+            className="studio-input" 
+            placeholder="Paste Image URL..." 
+            value={formData[field] || ''} 
+            onChange={e => handleInputChange(field, e.target.value)}
+          />
+          <div 
+            className="upload-btn"
+            style={{
+              padding: '10px',
+              textAlign: 'center',
+              background: 'rgba(99, 102, 241, 0.1)',
+              border: '1px dashed #6366f1',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+              color: '#6366f1'
+            }}
+            onClick={() => {
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.accept = 'image/*';
+              input.onchange = (e) => handleFileUpload(e, field);
+              input.click();
+            }}
+          >
+            {uploading ? <Loader2 className="animate-spin" size={16} /> : <>UPLOAD NEW FILE</>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderGalleryManager = () => (
+    <div className="form-group" style={{ marginTop: '20px' }}>
+      <label>Project Gallery (Multiple Screenshots)</label>
+      <div style={{ 
+        background: 'rgba(255,107,0,0.03)', 
+        border: '1px solid rgba(255,107,0,0.1)', 
+        borderRadius: '20px', 
+        padding: '25px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px'
+      }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '15px' }}>
+           {Array.isArray(formData.gallery) && formData.gallery.map((img, i) => (
+             <div key={i} style={{ position: 'relative', height: '90px', borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+               <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+               <button 
+                 onClick={() => {
+                   const newGallery = formData.gallery.filter((_, idx) => idx !== i);
+                   handleInputChange('gallery', newGallery);
+                 }}
+                 style={{ position: 'absolute', top: '5px', right: '5px', background: 'rgba(239, 68, 68, 0.8)', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+               >
+                 <X size={14} />
+               </button>
+             </div>
+           ))}
+           <div 
+             onClick={() => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = (e) => handleFileUpload(e, 'gallery');
+                input.click();
+             }}
+             style={{ height: '90px', borderRadius: '10px', border: '2px dashed rgba(255,107,0,0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--accent-primary)', gap: '5px', background: 'rgba(255,107,0,0.05)' }}
+           >
+             <Plus size={20} />
+             <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>ADD IMAGE</span>
+           </div>
+        </div>
+        
+        <div className="form-group">
+          <label style={{ fontSize: '0.7rem' }}>Bulk Add (URLs separated by comma)</label>
+          <textarea 
+            className="studio-input"
+            value={Array.isArray(formData.gallery) ? formData.gallery.join(', ') : formData.gallery || ''}
+            onChange={e => handleInputChange('gallery', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
+            placeholder="https://image1.jpg, https://image2.jpg"
+            style={{ fontSize: '0.8rem', minHeight: '60px' }}
+          />
         </div>
       </div>
     </div>
@@ -650,10 +902,10 @@ const StudioMode = () => {
                     onClick={() => setSelectedCollection(col)}
                     style={{
                       padding: '10px 20px',
-                      background: selectedCollection === col ? 'linear-gradient(135deg, #6366f1, #a855f7)' : 'rgba(255, 255, 255, 0.05)',
-                      border: selectedCollection === col ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                      background: selectedCollection === col ? 'linear-gradient(135deg, #6366f1, #a855f7)' : 'var(--card-bg)',
+                      border: selectedCollection === col ? 'none' : '1px solid var(--border-color)',
                       borderRadius: '12px',
-                      color: 'white',
+                      color: selectedCollection === col ? 'white' : 'var(--text-primary)',
                       cursor: 'pointer',
                       fontWeight: 600,
                       textTransform: 'capitalize',
@@ -792,9 +1044,9 @@ const StudioMode = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               style={{
-                width: '100%', maxWidth: '600px', background: 'rgba(15, 15, 25, 0.95)',
-                border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: '24px',
-                padding: '40px', position: 'relative', maxHeight: '90vh', overflowY: 'auto',
+                width: '100%', maxWidth: '1000px', background: 'rgba(15, 15, 25, 0.98)',
+                border: '1px solid rgba(255,107,0,0.2)', borderRadius: '30px',
+                padding: '50px', position: 'relative', maxHeight: '90vh', overflowY: 'auto',
                 boxShadow: '0 30px 60px rgba(0,0,0,0.5)'
               }}
             >

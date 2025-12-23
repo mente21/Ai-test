@@ -132,37 +132,6 @@ const HeroSection = () => {
           position: 'relative'
         }}
       >
-        <div style={{
-            position: 'absolute',
-            left: '-100px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '20px',
-            alignItems: 'center'
-        }}>
-            <div style={{ width: '1px', height: '60px', background: 'var(--border-color)', opacity: 0.5 }}></div>
-            {[
-                { icon: <Github size={20} />, link: '#' },
-                { icon: <Linkedin size={20} />, link: '#' },
-                { icon: <Instagram size={20} />, link: '#' },
-                { icon: <Twitter size={20} />, link: '#' }
-            ].map((social, i) => (
-                <motion.a
-                    key={i}
-                    href={social.link}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.8 + (i * 0.1) }}
-                    whileHover={{ scale: 1.2, color: 'var(--accent-primary)', x: 5 }}
-                    style={{ color: 'var(--text-secondary)', transition: 'color 0.3s ease', cursor: 'pointer' }}
-                >
-                    {social.icon}
-                </motion.a>
-            ))}
-            <div style={{ width: '1px', height: '60px', background: 'var(--border-color)', opacity: 0.5 }}></div>
-        </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
           <div style={{ width: '35px', height: '1.5px', background: 'var(--accent-primary)' }}></div>
@@ -205,7 +174,7 @@ const HeroSection = () => {
           color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.8, maxWidth: '420px',
           fontWeight: 300, marginTop: '10px'
         }}>
-          Specializing in premium high-performance digital architectures and high-impact industrial aesthetics for global brands.
+          {dynamicHome.desc || "Specializing in premium high-performance digital architectures and high-impact industrial aesthetics for global brands."}
         </p>
 
         <motion.div style={{ marginTop: '40px', display: 'flex', alignItems: 'center', gap: '20px' }}>

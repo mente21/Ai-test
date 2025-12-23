@@ -1,30 +1,104 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Linkedin, Github, Send, MapPin, Phone, Instagram, Twitter } from 'lucide-react';
+import { Mail, Linkedin, Github, Send, MapPin, Phone, Instagram, Twitter, Youtube, Facebook, ExternalLink, Music, MessageCircle } from 'lucide-react';
 import { useCollection } from '../hooks/useCollection';
 
 const ContactSection = () => {
     const { data: contactData, loading } = useCollection('contact');
+    const [status, setStatus] = useState('');
 
     const dynamicContact = contactData?.[0] || {
         email: "hello@mente.co",
+        phone: "+1 234 567 890",
         location: "London, United Kingdom",
         github: "#",
         linkedin: "#",
+        youtube: "#",
+        facebook: "#",
+        fiverr: "#",
+        tiktok: "#",
+        telegram: "#",
         instagram: "#",
         twitter: "#",
         desc: "I'm always open to discussing high-performance architectures, complex backend logic, or premium digital designs."
     };
 
+    const TikTokIcon = () => (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.86-.6-4.12-1.3-.76-.41-1.42-.92-1.98-1.57-.02 1.35-.01 2.69-.01 4.04 0 3.01-.45 6.44-3.11 8.35-2.09 1.48-5.07 1.71-7.19.46-2.5-1.42-3.66-4.59-2.73-7.22.65-1.89 2.45-3.37 4.45-3.51V10c-2.02.13-3.83 1.53-4.38 3.47-.64 2.21.36 4.88 2.45 6.01 1.63.9 3.86.84 5.23-.42 1.25-1.07 1.62-2.92 1.5-4.51V.02h-.04Z"/>
+        </svg>
+    );
+
     const socials = [
         { icon: <Linkedin size={22} />, link: dynamicContact.linkedin, active: !!dynamicContact.linkedin },
         { icon: <Github size={22} />, link: dynamicContact.github, active: !!dynamicContact.github },
+        { icon: <Youtube size={22} />, link: dynamicContact.youtube, active: !!dynamicContact.youtube },
+        { icon: <Facebook size={22} />, link: dynamicContact.facebook, active: !!dynamicContact.facebook },
+        { icon: <ExternalLink size={22} />, link: dynamicContact.fiverr, label: 'Fiverr', active: !!dynamicContact.fiverr },
+        { icon: <TikTokIcon />, link: dynamicContact.tiktok, label: 'TikTok', active: !!dynamicContact.tiktok },
+        { icon: <Send size={22} />, link: dynamicContact.telegram, label: 'Telegram', active: !!dynamicContact.telegram },
         { icon: <Instagram size={22} />, link: dynamicContact.instagram, active: !!dynamicContact.instagram },
         { icon: <Twitter size={22} />, link: dynamicContact.twitter, active: !!dynamicContact.twitter },
         { icon: <Mail size={22} />, link: `mailto:${dynamicContact.email}`, active: true }
-    ].filter(s => s.active && s.link !== '#');
+    ].filter(s => s.active && s.link !== '#' && s.link !== '');
+
+    const handleEmailTransmit = (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const name = formData.get('name');
+        const email = formData.get('email');
+        const message = formData.get('message');
+        
+        const subject = `Portfolio Inquiry from ${name}`;
+        const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
+        
+        window.location.href = `mailto:${dynamicContact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        setStatus('Message prepared in your email client!');
+    };
 
     if (loading) return null;
+
+    const contactItemStyle = { 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: '24px',
+        padding: '12px',
+        borderRadius: '20px',
+        transition: 'all 0.3s ease',
+        cursor: 'default'
+    };
+
+    const iconBoxStyle = { 
+        width: '56px', 
+        height: '56px', 
+        borderRadius: '16px', 
+        background: 'rgba(255, 107, 0, 0.05)',
+        border: '1px solid rgba(255, 107, 0, 0.1)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'var(--accent-primary)',
+        flexShrink: 0
+    };
+
+    const labelStyle = { 
+        fontSize: '0.7rem', 
+        color: 'var(--text-secondary)', 
+        letterSpacing: '2px', 
+        textTransform: 'uppercase', 
+        marginBottom: '6px',
+        fontWeight: 700,
+        opacity: 0.6
+    };
+
+    const infoStyle = { 
+        fontSize: '1.2rem', 
+        color: 'var(--text-primary)', 
+        fontWeight: 400, // Natural weight
+        letterSpacing: '0.5px',
+        wordBreak: 'break-all',
+        fontFamily: 'Inter, system-ui, sans-serif' // Cleaner font
+    };
 
     return (
         <section id="contact" style={{ 
@@ -73,62 +147,50 @@ const ContactSection = () => {
                         color: 'var(--text-secondary)', 
                         lineHeight: 1.8,
                         marginBottom: '60px',
-                        maxWidth: '400px'
+                        maxWidth: '400px',
+                        fontWeight: 300
                     }}>
                         {dynamicContact.desc}
                     </p>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                            <div style={{ 
-                                width: '60px', 
-                                height: '60px', 
-                                borderRadius: '15px', 
-                                background: 'rgba(255, 107, 0, 0.1)',
-                                border: '1px solid rgba(255, 107, 0, 0.2)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: '#ff6b00'
-                            }}>
-                                <Mail size={24} />
-                            </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        <div style={contactItemStyle}>
+                            <div style={iconBoxStyle}><Mail size={22} /></div>
                             <div>
-                                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '4px' }}>Email</div>
-                                <div style={{ fontSize: '1.1rem', color: 'var(--text-primary)', fontWeight: 600 }}>{dynamicContact.email}</div>
+                                <div style={labelStyle}>Email Protocol</div>
+                                <div style={infoStyle}>{dynamicContact.email}</div>
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                            <div style={{ 
-                                width: '60px', 
-                                height: '60px', 
-                                borderRadius: '15px', 
-                                background: 'rgba(255, 107, 0, 0.1)',
-                                border: '1px solid rgba(255, 107, 0, 0.2)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: '#ff6b00'
-                            }}>
-                                <MapPin size={24} />
-                            </div>
+                        <div style={contactItemStyle}>
+                            <div style={iconBoxStyle}><Phone size={22} /></div>
                             <div>
-                                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '4px' }}>Location</div>
-                                <div style={{ fontSize: '1.1rem', color: 'var(--text-primary)', fontWeight: 600 }}>{dynamicContact.location}</div>
+                                <div style={labelStyle}>Comm-Link</div>
+                                <div style={infoStyle}>{dynamicContact.phone}</div>
+                            </div>
+                        </div>
+
+                        <div style={contactItemStyle}>
+                            <div style={iconBoxStyle}><MapPin size={22} /></div>
+                            <div>
+                                <div style={labelStyle}>Station / Location</div>
+                                <div style={infoStyle}>{dynamicContact.location}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '20px', marginTop: '80px' }}>
+                    {/* Social Hub */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', marginTop: '60px', paddingLeft: '12px' }}>
                         {socials.map((social, i) => (
                             <motion.a 
                                 key={i}
                                 href={social.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 whileHover={{ y: -5, background: 'var(--accent-primary)', color: 'black', borderColor: 'var(--accent-primary)' }}
                                 style={{
-                                    width: '54px',
-                                    height: '54px',
+                                    width: '48px',
+                                    height: '48px',
                                     borderRadius: '12px',
                                     border: '1px solid var(--border-color)',
                                     display: 'flex',
@@ -136,8 +198,10 @@ const ContactSection = () => {
                                     justifyContent: 'center',
                                     color: 'var(--text-primary)',
                                     transition: 'all 0.3s ease',
-                                    background: 'var(--card-bg)'
+                                    background: 'var(--card-bg)',
+                                    position: 'relative'
                                 }}
+                                title={social.label || ''}
                             >
                                 {social.icon}
                             </motion.a>
@@ -160,12 +224,14 @@ const ContactSection = () => {
                         boxShadow: '0 20px 40px rgba(0,0,0,0.05)'
                     }}
                 >
-                    <form style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+                    <form onSubmit={handleEmailTransmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
                         <div style={{ gridColumn: 'span 1' }}>
                             <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Your Name</label>
                             <input 
                                 type="text" 
+                                name="name"
                                 placeholder="ALEX MERCER"
+                                required
                                 style={{
                                     width: '100%',
                                     background: 'var(--bg-color)',
@@ -183,7 +249,9 @@ const ContactSection = () => {
                             <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Email Address</label>
                             <input 
                                 type="email" 
+                                name="email"
                                 placeholder="ALEX@EXAMPLE.COM"
+                                required
                                 style={{
                                     width: '100%',
                                     background: 'var(--bg-color)',
@@ -200,8 +268,10 @@ const ContactSection = () => {
                         <div style={{ gridColumn: 'span 2' }}>
                             <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Your Message</label>
                             <textarea 
+                                name="message"
                                 rows="6"
                                 placeholder="TELL ME ABOUT YOUR VISION"
+                                required
                                 style={{
                                     width: '100%',
                                     background: 'var(--bg-color)',
@@ -218,6 +288,7 @@ const ContactSection = () => {
                         </div>
                         <div style={{ gridColumn: 'span 2' }}>
                             <motion.button 
+                                type="submit"
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 style={{
@@ -241,6 +312,7 @@ const ContactSection = () => {
                             >
                                 TRANSMIT MESSAGE <Send size={20} />
                             </motion.button>
+                            {status && <p style={{ color: 'var(--accent-primary)', fontSize: '0.8rem', marginTop: '15px', textAlign: 'center', letterSpacing: '1px' }}>{status}</p>}
                         </div>
                     </form>
                 </motion.div>
@@ -256,9 +328,11 @@ const ContactSection = () => {
                 opacity: 0.5,
                 fontSize: '0.8rem',
                 letterSpacing: '2px',
-                color: 'var(--text-primary)'
+                color: 'var(--text-primary)',
+                flexWrap: 'wrap',
+                gap: '20px'
             }}>
-                <div>© 2024 PORTFOLIO • INDUSTRIAL ARCHITECT</div>
+                <div>© {new Date().getFullYear()} PORTFOLIO • INDUSTRIAL ARCHITECT</div>
                 <div>POWERED BY AI LOGIC</div>
             </div>
 
@@ -278,3 +352,4 @@ const ContactSection = () => {
 };
 
 export default ContactSection;
+

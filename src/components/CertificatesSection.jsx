@@ -33,7 +33,7 @@ const staticCertificates = [
   }
 ];
 
-const CertificatesSection = () => {
+const CertificatesSection = ({ onOpenDetail }) => {
   const { data: dbCertificates, loading } = useCollection('certificates');
   const [index, setIndex] = useState(0);
 
@@ -136,8 +136,10 @@ const CertificatesSection = () => {
                 position: 'absolute',
                 width: '400px',
                 height: '550px',
-                pointerEvents: isFront ? 'auto' : 'none'
+                pointerEvents: isFront ? 'auto' : 'none',
+                cursor: 'pointer'
               }}
+              onClick={() => isFront && onOpenDetail(cert)}
             >
               <div 
                 className="certificate-card"
@@ -226,6 +228,10 @@ const CertificatesSection = () => {
                   <motion.button 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenDetail(cert);
+                    }}
                     style={{
                       flex: 1,
                       background: 'var(--text-primary)',

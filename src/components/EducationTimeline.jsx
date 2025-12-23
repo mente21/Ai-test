@@ -1,8 +1,9 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCollection } from '../hooks/useCollection';
+import { X, ExternalLink } from 'lucide-react';
 
-const EducationTimeline = () => {
+const EducationTimeline = ({ onOpenDetail }) => {
   const { data: dbEducation, loading } = useCollection('education');
 
   const staticEducation = [
@@ -34,15 +35,30 @@ const EducationTimeline = () => {
 
   const rawData = dbEducation.length > 0 ? dbEducation : staticEducation;
   
+  const getProgressColor = (index, total) => {
+    if (total <= 1) return '#ff4d4d'; // Industrial Red
+    if (total === 2) return index === 0 ? '#ff4d4d' : '#00ff88'; // Red to Green
+    if (total === 3) {
+      if (index === 0) return '#ff4d4d';
+      if (index === 1) return '#ffcc00'; // Yellow
+      return '#00ff88';
+    }
+    
+    // For 4+ items, create a smooth transition from Red (0) to Green (130)
+    const hue = (index / (total - 1)) * 135;
+    return `hsl(${hue}, 100%, 50%)`;
+  };
+
   const educationData = rawData.map((item, idx) => ({
       ...item,
       position: idx % 2 === 0 ? 'top' : 'bottom',
-      color: ['#ff6b00', '#ff9e00', '#ffcc00', '#00ff88'][idx % 4]
+      color: getProgressColor(idx, rawData.length)
   }));
 
   if (loading) return null;
 
   return (
+    <>
     <section id="education" style={{ 
       padding: '120px 10% 120px 240px',
       background: 'var(--bg-color)',
@@ -73,10 +89,20 @@ const EducationTimeline = () => {
             </filter>
             
             <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#ff6b00" />
-              <stop offset="33%" stopColor="#ff9e00" />
-              <stop offset="66%" stopColor="#ffcc00" />
-              <stop offset="100%" stopColor="#00ff88" />
+              {educationData.length <= 1 ? (
+                <>
+                  <stop offset="0%" stopColor="#ff4d4d" />
+                  <stop offset="100%" stopColor="#ff4d4d" />
+                </>
+              ) : (
+                educationData.map((item, idx) => (
+                  <stop 
+                    key={idx} 
+                    offset={`${(idx / (educationData.length - 1)) * 100}%`} 
+                    stopColor={item.color} 
+                  />
+                ))
+              )}
             </linearGradient>
           </defs>
 
@@ -153,6 +179,7 @@ const EducationTimeline = () => {
                     zIndex: 5,
                     border: '4px solid var(--bg-color)'
                   }}
+                  onClick={() => onOpenDetail(item)}
                 >
                     <div style={{ width: '10px', height: '10px', background: 'white', borderRadius: '50%' }} />
                 </motion.div>
@@ -175,8 +202,10 @@ const EducationTimeline = () => {
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
-                    transition: 'background 0.5s ease'
+                    transition: 'background 0.5s ease',
+                    cursor: 'pointer'
                   }}
+                  onClick={() => onOpenDetail(item)}
                 >
                   {item.position === 'bottom' && (
                     <div style={{ width: '100%', height: '140px', overflow: 'hidden' }}>
@@ -223,6 +252,7 @@ const EducationTimeline = () => {
         </div>
       </div>
     </section>
+    </>
   );
 };
 

@@ -14,6 +14,7 @@ import {
   Moon
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useCollection } from '../hooks/useCollection';
 
 const navItems = [
   { id: 'hero', label: 'Home', icon: <Home size={22} />, href: '#' },
@@ -27,9 +28,12 @@ const navItems = [
 ];
 
 const SidebarNav = () => {
+  const { data: homeData } = useCollection('home');
   const [hoveredItem, setHoveredItem] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const navigate = useNavigate();
+
+  const sidebarImage = homeData?.[0]?.sidebarImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=800&q=80";
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -90,7 +94,7 @@ const SidebarNav = () => {
         }}
       >
         <img 
-          src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=800&q=80" 
+          src={sidebarImage} 
           alt="Profile" 
           style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
         />
