@@ -2,13 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Sparkles, Github, Mail, Linkedin, Plus, Edit3, Trash2, Save, X, 
-  Eye, LogOut, Database, Table, Image as ImageIcon, Upload, Loader2, CheckCircle2
+  Eye, LogOut, Database, Table, Image as ImageIcon, Upload, Loader2, CheckCircle2,
+  Smartphone, Globe, Monitor, Server, Cloud, Code2, Paintbrush, Shield, Cpu, Terminal, Key
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProjectCard from '../components/ProjectCard';
 import { useProjects } from '../hooks/useProjects';
 import { db, storage } from '../lib/firebase';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
+import { hashPassword, verifyPassword } from '../utils/passwordUtils';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
 // CLOUDINARY CONFIGURATION (Fetched from .env)
@@ -24,7 +26,7 @@ const StudioMode = () => {
   const [password, setPassword] = useState('');
   
   // Dynamic collections
-  const [collections] = useState(['projects', 'skills', 'certificates', 'education', 'testimonials', 'home', 'about', 'contact']);
+  const [collections] = useState(['projects', 'services', 'skills', 'certificates', 'education', 'testimonials', 'home', 'about', 'contact']);
   const [selectedCollection, setSelectedCollection] = useState('projects');
   const [collectionData, setCollectionData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -35,6 +37,11 @@ const StudioMode = () => {
   const [formData, setFormData] = useState({});
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  
+  // Password change state
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ current: '', new: '', confirm: '' });
+  const [passwordLoading, setPasswordLoading] = useState(false);
   
   const fileInputRef = useRef(null);
 
@@ -56,20 +63,104 @@ const StudioMode = () => {
     loadCollectionData(selectedCollection);
   }, [selectedCollection]);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const adminPass = import.meta.env.VITE_STUDIO_ADMIN_PASSWORD || 'admin123';
-    if (password === adminPass) {
-      setIsAuthenticated(true);
-      sessionStorage.setItem('studioAuth', 'authenticated');
-    } else {
-      alert('Incorrect password');
+    setPasswordLoading(true);
+    
+    try {
+      // Fetch stored password hash from Firestore
+      const adminDocRef = doc(db, 'admin', 'credentials');
+      const adminDoc = await getDoc(adminDocRef);
+      
+      if (!adminDoc.exists()) {
+        // First time setup - use env variable as default
+        const defaultPass = import.meta.env.VITE_STUDIO_ADMIN_PASSWORD || 'admin123';
+        const defaultHash = await hashPassword(defaultPass);
+        await setDoc(adminDocRef, { passwordHash: defaultHash });
+        
+        // Verify with default
+        const isValid = await verifyPassword(password, defaultHash);
+        if (isValid) {
+          setIsAuthenticated(true);
+          sessionStorage.setItem('studioAuth', 'authenticated');
+          alert('⚠️ First login detected! Please change your password immediately.');
+        } else {
+          alert('Incorrect password');
+        }
+      } else {
+        // Verify against stored hash
+        const storedHash = adminDoc.data().passwordHash;
+        const isValid = await verifyPassword(password, storedHash);
+        
+        if (isValid) {
+          setIsAuthenticated(true);
+          sessionStorage.setItem('studioAuth', 'authenticated');
+        } else {
+          alert('Incorrect password');
+        }
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Login failed. Please try again.');
     }
+    
+    setPasswordLoading(false);
+    setPassword('');
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     sessionStorage.removeItem('studioAuth');
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    
+    if (passwordForm.new !== passwordForm.confirm) {
+      alert('New passwords do not match!');
+      return;
+    }
+    
+    if (passwordForm.new.length < 6) {
+      alert('New password must be at least 6 characters long!');
+      return;
+    }
+    
+    setPasswordLoading(true);
+    
+    try {
+      // Verify current password
+      const adminDocRef = doc(db, 'admin', 'credentials');
+      const adminDoc = await getDoc(adminDocRef);
+      
+      if (!adminDoc.exists()) {
+        alert('Authentication error. Please log in again.');
+        handleLogout();
+        return;
+      }
+      
+      const storedHash = adminDoc.data().passwordHash;
+      const isCurrentValid = await verifyPassword(passwordForm.current, storedHash);
+      
+      if (!isCurrentValid) {
+        alert('Current password is incorrect!');
+        setPasswordLoading(false);
+        return;
+      }
+      
+      // Hash and store new password
+      const newHash = await hashPassword(passwordForm.new);
+      await updateDoc(adminDocRef, { passwordHash: newHash });
+      
+      alert('✅ Password changed successfully!');
+      setShowPasswordModal(false);
+      setPasswordForm({ current: '', new: '', confirm: '' });
+    } catch (error) {
+      console.error('Password change error:', error);
+      alert('Failed to change password. Please try again.');
+    }
+    
+    setPasswordLoading(false);
   };
 
   const loadCollectionData = async (collectionName) => {
@@ -529,6 +620,118 @@ const StudioMode = () => {
       );
     }
 
+    if (selectedCollection === 'services') {
+      return (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
+          <div>
+            <div className="form-group">
+              <label>Service Title</label>
+              <input 
+                className="studio-input" 
+                value={formData.title || ''} 
+                onChange={e => handleInputChange('title', e.target.value)}
+                placeholder="e.g. Mobile App Development"
+              />
+            </div>
+            <div className="form-group" style={{ marginTop: '20px' }}>
+              <label>Description</label>
+              <textarea 
+                className="studio-input" 
+                value={formData.desc || ''} 
+                onChange={e => handleInputChange('desc', e.target.value)}
+                placeholder="Brief description of the service..."
+                style={{ minHeight: '120px' }}
+              />
+            </div>
+            <div className="form-group" style={{ marginTop: '20px' }}>
+              <label>Features (Comma separated)</label>
+              <input 
+                className="studio-input" 
+                value={formData.features || ''} 
+                onChange={e => handleInputChange('features', e.target.value)}
+                placeholder="e.g. iOS & Android, React Native, UI/UX"
+              />
+            </div>
+            <div className="form-group" style={{ marginTop: '20px' }}>
+              <label>Starting Price (Optional)</label>
+              <input 
+                className="studio-input" 
+                value={formData.price || ''} 
+                onChange={e => handleInputChange('price', e.target.value)}
+                placeholder="e.g. $2k+"
+              />
+            </div>
+          </div>
+
+          <div>
+            <div style={{ 
+              padding: '30px', 
+              background: 'rgba(255,107,0,0.03)', 
+              borderRadius: '24px', 
+              border: '1px solid rgba(255,107,0,0.1)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px'
+            }}>
+              <label style={{ fontSize: '0.7rem', color: 'var(--accent-primary)', fontWeight: 900, letterSpacing: '4px' }}>SERVICE ICON</label>
+              
+              <div className="form-group">
+                <select 
+                  className="studio-input"
+                  value={formData.icon || ''}
+                  onChange={e => handleInputChange('icon', e.target.value)}
+                  style={{ cursor: 'pointer', height: '50px', background: 'white', color: 'black' }}
+                >
+                  <option style={{ color: 'black', background: 'white' }} value="">Select an Icon</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaMobileAlt">Mobile App (Phone)</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaReact">React / React Native</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaGlobe">Web Development (Globe)</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaCode">Code / Programming</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaDatabase">Database / Backend</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaCloud">Cloud Services</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaPaintBrush">Design / UI/UX</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaBrain">AI / Machine Learning</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaShieldAlt">Security</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaServer">Server / DevOps</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaDesktop">Desktop App</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaRocket">Performance / Speed</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaTools">Maintenance / Tools</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaShoppingCart">E-Commerce</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaChartLine">Analytics / SEO</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaUsers">Consulting /  Team</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaPython">Python</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaNodeJs">Node.js</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaGamepad">Game Development</option>
+                  <option style={{ color: 'black', background: 'white' }} value="FaRobot">Automation</option>
+                </select>
+                
+                {/* Icon Preview */}
+                <div style={{ 
+                  marginTop: '20px', 
+                  height: '100px', 
+                  background: 'rgba(0,0,0,0.2)', 
+                  borderRadius: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '1px dashed var(--border-color)'
+                }}>
+                  {formData.icon ? (
+                    <div style={{ textAlign: 'center' }}>
+                       <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '10px' }}>Selected: {formData.icon}</div>
+                     </div>
+                  ) : (
+                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>No Icon Selected</span>
+                  )}
+                </div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     if (selectedCollection === 'education') {
       return (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
@@ -818,16 +1021,18 @@ const StudioMode = () => {
         backdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(255,255,255,0.06)'
       }}>
-        <div style={{ fontWeight: 800, fontSize: '1.6rem', letterSpacing: '-1.5px' }}>
+        <div style={{ fontWeight: 800, fontSize: '1.6rem', letterSpacing: '1px', fontFamily: "'Anton', sans-serif" }}>
           MENTE<span className="gradient-text">.CO</span>
           <span style={{ 
             marginLeft: '12px',
-            fontSize: '0.7rem',
+            fontSize: '0.8rem',
             padding: '4px 12px',
             background: 'rgba(99, 102, 241, 0.2)',
             border: '1px solid rgba(99, 102, 241, 0.4)',
             borderRadius: '100px',
-            color: 'var(--accent-primary)'
+            color: 'var(--accent-primary)',
+            fontFamily: "'Oswald', sans-serif",
+            letterSpacing: '2px'
           }}>
             STUDIO
           </span>
@@ -835,6 +1040,15 @@ const StudioMode = () => {
         <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
           {isAuthenticated ? (
             <>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowPasswordModal(true)}
+                className="btn"
+                style={{ background: 'rgba(99, 102, 241, 0.1)', color: '#6366f1', borderColor: 'rgba(99, 102, 241, 0.2)' }}
+              >
+                <Key size={18} /> Change Password
+              </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -863,18 +1077,18 @@ const StudioMode = () => {
             textAlign: 'center'
           }}>
             <Database size={40} className="gradient-text" style={{ marginBottom: '20px' }} />
-            <h3 style={{ marginBottom: '10px' }}>Admin Login</h3>
-            <p style={{ opacity: 0.6, marginBottom: '30px', fontSize: '0.9rem' }}>Enter security key to enable management controls.</p>
+            <h3 style={{ marginBottom: '10px', fontFamily: "'Oswald', sans-serif", fontSize: '2rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Admin Login</h3>
+            <p style={{ opacity: 0.7, marginBottom: '30px', fontSize: '1rem', fontFamily: "'Manrope', sans-serif" }}>Enter security key to enable management controls.</p>
             <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               <input 
                 type="password" 
                 className="studio-input" 
-                style={{ textAlign: 'center' }}
+                style={{ textAlign: 'center', fontFamily: "'Manrope', sans-serif", fontSize: '1rem' }}
                 placeholder="Password" 
                 value={password}
                 onChange={e => setPassword(e.target.value)}
               />
-              <button type="submit" className="btn btn-primary" style={{ height: '50px' }}>Access Dashboard</button>
+              <button type="submit" className="btn btn-primary" style={{ height: '50px', fontFamily: "'Oswald', sans-serif", fontSize: '1.1rem', letterSpacing: '2px', textTransform: 'uppercase' }}>Access Dashboard</button>
             </form>
           </div>
         ) : (
@@ -909,8 +1123,10 @@ const StudioMode = () => {
                       borderRadius: '12px',
                       color: selectedCollection === col ? 'white' : 'var(--text-primary)',
                       cursor: 'pointer',
-                      fontWeight: 600,
-                      textTransform: 'capitalize',
+                      fontWeight: 500,
+                      textTransform: 'uppercase',
+                      fontFamily: "'Oswald', sans-serif",
+                      letterSpacing: '1px',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '8px',
@@ -927,7 +1143,7 @@ const StudioMode = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => openForm()}
                 className="btn btn-primary"
-                style={{ padding: '12px 24px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                style={{ padding: '12px 24px', display: 'flex', alignItems: 'center', gap: '8px', fontFamily: "'Oswald', sans-serif", textTransform: 'uppercase', letterSpacing: '1px' }}
               >
                 <Plus size={20} /> Add New {selectedCollection.slice(0, -1)}
               </motion.button>
@@ -989,23 +1205,24 @@ const StudioMode = () => {
 
                     {/* Content Rendering */}
                     <div>
-                      <h3 style={{ fontSize: '1.4rem', color: 'var(--accent-primary)', marginBottom: '10px' }}>
+                      <h3 style={{ fontSize: '1.4rem', color: 'var(--accent-primary)', marginBottom: '10px', fontFamily: "'Anton', sans-serif", letterSpacing: '1px', textTransform: 'uppercase' }}>
                         {item.title || item.name || "Untitled Entry"}
                       </h3>
                       
-                      {item.company && <p style={{ fontWeight: 600, opacity: 0.9 }}>{item.company}</p>}
-                      {item.issuer && <p style={{ fontWeight: 600, opacity: 0.9 }}>{item.issuer}</p>}
-                      {item.period && <p style={{ fontSize: '0.9rem', opacity: 0.6 }}>{item.period}</p>}
-                      {item.date && <p style={{ fontSize: '0.9rem', opacity: 0.6 }}>{item.date}</p>}
+                      {item.company && <p style={{ fontWeight: 600, opacity: 0.9, fontFamily: "'Manrope', sans-serif" }}>{item.company}</p>}
+                      {item.issuer && <p style={{ fontWeight: 600, opacity: 0.9, fontFamily: "'Manrope', sans-serif" }}>{item.issuer}</p>}
+                      {item.period && <p style={{ fontSize: '0.9rem', opacity: 0.6, fontFamily: "'Manrope', sans-serif" }}>{item.period}</p>}
+                      {item.date && <p style={{ fontSize: '0.9rem', opacity: 0.6, fontFamily: "'Manrope', sans-serif" }}>{item.date}</p>}
 
-                      <p style={{ marginTop: '15px', lineHeight: '1.6', opacity: 0.8 }}>{item.desc}</p>
+                      <p style={{ marginTop: '15px', lineHeight: '1.6', opacity: 0.8, fontFamily: "'Manrope', sans-serif" }}>{item.desc}</p>
                       
                       {item.tech && item.tech.length > 0 && (
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '15px' }}>
                           {item.tech.map((t, i) => (
                             <span key={i} style={{ 
                               fontSize: '0.75rem', padding: '4px 12px', background: 'rgba(255,255,255,0.05)', 
-                              borderRadius: '100px', border: '1px solid rgba(255,255,255,0.1)'
+                              borderRadius: '100px', border: '1px solid rgba(255,255,255,0.1)',
+                              fontFamily: "'Manrope', sans-serif"
                             }}>
                               {t}
                             </span>
@@ -1059,7 +1276,7 @@ const StudioMode = () => {
                 <X size={24} />
               </button>
 
-              <h2 className="gradient-text" style={{ marginBottom: '30px', fontSize: '1.8rem' }}>
+              <h2 className="gradient-text" style={{ marginBottom: '30px', fontSize: '1.8rem', fontFamily: "'Anton', sans-serif", letterSpacing: '1px', textTransform: 'uppercase' }}>
                 {editingId ? 'Edit Entry' : `Add to ${selectedCollection}`}
               </h2>
 
@@ -1070,12 +1287,116 @@ const StudioMode = () => {
                   <button 
                     type="submit" 
                     className="btn btn-primary" 
-                    style={{ flex: 2, height: '50px' }}
+                    style={{ flex: 2, height: '50px', fontFamily: "'Oswald', sans-serif", textTransform: 'uppercase', letterSpacing: '1px', fontSize: '1rem' }}
                     disabled={loading || uploading}
                   >
                     {loading ? <Loader2 className="animate-spin" /> : <><Save size={18} /> {editingId ? 'Update Entry' : 'Create Entry'}</>}
                   </button>
-                  <button type="button" onClick={closeForm} className="btn" style={{ flex: 1 }}>Cancel</button>
+                  <button type="button" onClick={closeForm} className="btn" style={{ flex: 1, fontFamily: "'Oswald', sans-serif", textTransform: 'uppercase' }}>Cancel</button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Password Change Modal */}
+      <AnimatePresence>
+        {showPasswordModal && (
+          <div style={{ 
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
+            display: 'flex', justifyContent: 'center', alignItems: 'center',
+            zIndex: 9999, padding: '20px'
+          }}>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowPasswordModal(false)}
+              style={{ position: 'absolute', width: '100%', height: '100%', background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)' }}
+            />
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              style={{
+                width: '100%', maxWidth: '500px', background: 'rgba(15, 15, 25, 0.98)',
+                border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: '30px',
+                padding: '50px', position: 'relative',
+                boxShadow: '0 30px 60px rgba(0,0,0,0.5)'
+              }}
+            >
+              <button 
+                onClick={() => setShowPasswordModal(false)}
+                style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}
+              >
+                <X size={24} />
+              </button>
+
+              <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+                <Key size={40} className="gradient-text" style={{ marginBottom: '15px' }} />
+                <h2 style={{ fontFamily: "'Anton', sans-serif", fontSize: '1.8rem', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>
+                  Change Password
+                </h2>
+                <p style={{ fontFamily: "'Manrope', sans-serif", color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                  Update your admin credentials securely
+                </p>
+              </div>
+
+              <form onSubmit={handlePasswordChange} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div className="form-group">
+                  <label>Current Password</label>
+                  <input 
+                    type="password"
+                    className="studio-input"
+                    value={passwordForm.current}
+                    onChange={(e) => setPasswordForm({...passwordForm, current: e.target.value})}
+                    required
+                    placeholder="Enter current password"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>New Password</label>
+                  <input 
+                    type="password"
+                    className="studio-input"
+                    value={passwordForm.new}
+                    onChange={(e) => setPasswordForm({...passwordForm, new: e.target.value})}
+                    required
+                    minLength={6}
+                    placeholder="Enter new password (min 6 characters)"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Confirm New Password</label>
+                  <input 
+                    type="password"
+                    className="studio-input"
+                    value={passwordForm.confirm}
+                    onChange={(e) => setPasswordForm({...passwordForm, confirm: e.target.value})}
+                    required
+                    placeholder="Confirm new password"
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '15px', marginTop: '20px' }}>
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary" 
+                    style={{ flex: 2, height: '50px', fontFamily: "'Oswald', sans-serif", textTransform: 'uppercase', letterSpacing: '1px', fontSize: '1rem' }}
+                    disabled={passwordLoading}
+                  >
+                    {passwordLoading ? <Loader2 className="animate-spin" /> : <><Key size={18} /> Update Password</>}
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => setShowPasswordModal(false)} 
+                    className="btn" 
+                    style={{ flex: 1, fontFamily: "'Oswald', sans-serif", textTransform: 'uppercase' }}
+                  >
+                    Cancel
+                  </button>
                 </div>
               </form>
             </motion.div>
@@ -1085,18 +1406,32 @@ const StudioMode = () => {
 
       <style>{`
         .form-group { display: flex; flexDirection: column; gap: 8px; }
-        .form-group label { font-size: 0.9rem; font-weight: 600; opacity: 0.7; color: #6366f1; }
+        .form-group label { font-size: 0.8rem; font-weight: 400; opacity: 1; color: var(--accent-primary); font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
         .studio-input {
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 12px;
           padding: 12px 16px;
-          color: white;
-          font-size: 1rem;
+          color: #000;
+          -webkit-text-fill-color: #000;
+          font-family: 'Manrope', sans-serif;
+          font-size: 0.95rem;
           transition: 0.3s;
           width: 100%;
         }
+        .studio-input::placeholder {
+          color: rgba(0, 0, 0, 0.4);
+          -webkit-text-fill-color: rgba(0, 0, 0, 0.4);
+        }
         .studio-input:focus { border-color: #6366f1; outline: none; background: rgba(255, 255, 255, 0.08); }
+        
+        /* Hide ALL chat assistant elements in Studio Mode */
+        .chat-toggle-btn { display: none !important; }
+        #chatbase-bubble-button { display: none !important; }
+        #chatbase-bubble-window { display: none !important; }
+        iframe#chatbase-bubble-window { display: none !important; }
+        div[style*="Ask AI Assistant"] { display: none !important; }
+        
         .animate-spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>

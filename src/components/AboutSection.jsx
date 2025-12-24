@@ -204,12 +204,12 @@ const AboutSection = () => {
            {statItems.map((item, idx) => (
              <div key={idx}>
                 <div style={{ 
-                  fontSize: '3rem', 
-                  fontWeight: 600, 
+                  fontSize: '2rem', 
+                  fontWeight: 800, 
                   color: 'white', 
-                  fontFamily: "'Oswald', sans-serif",
+                  fontFamily: "'Manrope', sans-serif",
                   lineHeight: 1,
-                  letterSpacing: '-1px',
+                  letterSpacing: '-0.5px',
                   textTransform: 'uppercase'
                 }}>
                   {item.value}

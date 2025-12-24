@@ -11,7 +11,8 @@ import {
   Mail,
   Settings,
   Sun,
-  Moon
+  Moon,
+  Layers
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCollection } from '../hooks/useCollection';
@@ -21,6 +22,7 @@ const navItems = [
   { id: 'about', label: 'About', icon: <User size={22} />, href: '#about' },
   { id: 'work', label: 'Portfolio', icon: <Layout size={22} />, href: '#work' },
   { id: 'skills', label: 'Skills', icon: <Cpu size={22} />, href: '#skills' },
+  { id: 'services', label: 'Services', icon: <Layers size={22} />, href: '#services' },
   { id: 'education', label: 'Education', icon: <GraduationCap size={22} />, href: '#education' },
   { id: 'certificates', label: 'Certificates', icon: <Award size={22} />, href: '#certificates' },
   { id: 'testimonials', label: 'Testimonials', icon: <MessageSquare size={22} />, href: '#testimonials' },
@@ -55,16 +57,17 @@ const SidebarNav = () => {
   };
 
   return (
+    <>
     <motion.div 
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       style={{
         position: 'fixed',
         left: '24px',
-        top: '24px',
+        top: '15px',
         width: '74px',
         height: 'auto',
-        maxHeight: '94vh',
+        maxHeight: '96vh',
         background: 'var(--sidebar-bg)',
         backdropFilter: 'blur(25px)',
         borderRadius: '40px',
@@ -72,22 +75,22 @@ const SidebarNav = () => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        padding: '25px 0',
+        padding: '15px 0',
         zIndex: 1000,
         boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
-        gap: '12px'
+        gap: '8px'
       }}
     >
       {/* Profile Picture Logo */}
       <motion.div 
         whileHover={{ scale: 1.1 }}
         style={{
-          width: '54px',
-          height: '54px',
+          width: '50px',
+          height: '50px',
           borderRadius: '50%',
           border: '2px solid var(--accent-primary)',
           overflow: 'hidden',
-          marginBottom: '10px',
+          marginBottom: '5px',
           cursor: 'pointer',
           padding: '3px',
           flexShrink: 0
@@ -100,7 +103,7 @@ const SidebarNav = () => {
         />
       </motion.div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center' }}>
         {navItems.map((item) => (
           <div 
             key={item.id} 
@@ -211,6 +214,89 @@ const SidebarNav = () => {
          </motion.button>
       </div>
     </motion.div>
+    
+    <style>{`
+      /* Mobile Responsive Styles for Sidebar */
+      @media (max-width: 768px) {
+        /* Move sidebar to bottom on mobile */
+        div[style*="position: fixed"][style*="left: 24px"] {
+          left: 0 !important;
+          right: 0 !important;
+          top: auto !important;
+          bottom: 0 !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          height: 70px !important;
+          max-height: 70px !important;
+          border-radius: 0 !important;
+          flex-direction: row !important;
+          justify-content: space-around !important;
+          padding: 10px 15px !important;
+          gap: 0 !important;
+          overflow-x: auto !important;
+          overflow-y: hidden !important;
+        }
+        
+        /* Hide avatar on mobile */
+        img[style*="border-radius: 50%"] {
+          display: none !important;
+        }
+        
+        /* Adjust nav items for horizontal layout */
+        div[style*="width: 100%"][style*="flex-direction: column"] {
+          flex-direction: row !important;
+          width: auto !important;
+          gap: 5px !important;
+        }
+        
+        /* Make nav buttons smaller */
+        a[style*="width: 48px"] {
+          width: 40px !important;
+          height: 40px !important;
+          min-width: 40px !important;
+        }
+        
+        /* Adjust theme toggle */
+        button[style*="width: 48px"][style*="height: 48px"] {
+          width: 40px !important;
+          height: 40px !important;
+        }
+        
+        /* Settings button */
+        button[style*="Settings"] {
+          width: 40px !important;
+          height: 40px !important;
+        }
+        
+        /* Reduce icon sizes */
+        svg {
+          width: 18px !important;
+          height: 18px !important;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        /* Even more compact on small mobile */
+        div[style*="position: fixed"][style*="left: 24px"] {
+          height: 60px !important;
+          max-height: 60px !important;
+          padding: 8px 10px !important;
+        }
+        
+        a[style*="width: 48px"],
+        button[style*="width: 48px"] {
+          width: 35px !important;
+          height: 35px !important;
+          min-width: 35px !important;
+        }
+        
+        svg {
+          width: 16px !important;
+          height: 16px !important;
+        }
+      }
+    `}</style>
+    </>
   );
 };
 

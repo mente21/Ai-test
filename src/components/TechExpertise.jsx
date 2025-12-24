@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Atom, Globe, Wind, Palette, Terminal, Cpu, Code2, 
-  Server, Database, Zap, Container, Cloud, ShieldCheck
-} from 'lucide-react';
+  FaReact, FaHtml5, FaPython, FaNodeJs, FaDocker, FaLinux, FaCloud, FaAws, FaGitAlt 
+} from 'react-icons/fa';
+import { 
+  SiNextdotjs, SiTailwindcss, SiTypescript, SiMongodb, SiMysql, SiFirebase, 
+  SiPostgresql, SiRedis, SiGraphql, SiNestjs, SiKubernetes 
+} from 'react-icons/si';
 import { useCollection } from '../hooks/useCollection';
 
 const TechExpertise = () => {
@@ -17,26 +20,33 @@ const TechExpertise = () => {
     const findNodeData = (name) => skillsData?.find(s => s.name?.toLowerCase() === name.toLowerCase());
 
     const nodes = [
-        // Group 1: Frontend (x=15)
-        { id: 1, name: 'React', x: 15, y: 20, icon: <Atom size={26} />, color: '#61dafb' },
-        { id: 2, name: 'Next.js', x: 15, y: 50, icon: <Globe size={26} />, color: '#ff6b00' }, 
-        { id: 3, name: 'Tailwind', x: 15, y: 75, icon: <Wind size={26} />, color: '#38bdf8' },
-        { id: 4, name: 'HTML / CSS', x: 15, y: 92, icon: <Palette size={26} />, color: '#e34f26' },
+        // Group 1: Frontend & Mobile (x=15)
+        { id: 1, name: 'React', x: 15, y: 15, icon: <FaReact size={26} />, color: '#61dafb' },
+        { id: 2, name: 'Next.js', x: 15, y: 32, icon: <SiNextdotjs size={26} />, color: '#ffffff' }, 
+        { id: 3, name: 'React Native', x: 15, y: 50, icon: <FaReact size={26} />, color: '#61dafb' }, // Mobile Expert
+        { id: 4, name: 'Tailwind', x: 15, y: 68, icon: <SiTailwindcss size={26} />, color: '#38bdf8' },
+        { id: 5, name: 'HTML / CSS', x: 15, y: 86, icon: <FaHtml5 size={26} />, color: '#e34f26' },
         
-        // Group 2: Logic (x=40)
-        { id: 5, name: 'Python', x: 40, y: 20, icon: <Terminal size={26} />, color: '#3776ab' },
-        { id: 6, name: 'Node.js', x: 40, y: 50, icon: <Cpu size={26} />, color: '#339933' }, 
-        { id: 7, name: 'Typescript', x: 40, y: 80, icon: <Code2 size={26} />, color: '#3178c6' },
+        // Group 2: Logic & Backend (x=40)
+        { id: 6, name: 'Python', x: 40, y: 15, icon: <FaPython size={26} />, color: '#3776ab' },
+        { id: 7, name: 'Node.js', x: 40, y: 32, icon: <FaNodeJs size={26} />, color: '#339933' }, 
+        { id: 8, name: 'NestJS', x: 40, y: 50, icon: <SiNestjs size={26} />, color: '#e0234e' }, // Architect Logic
+        { id: 9, name: 'GraphQL', x: 40, y: 68, icon: <SiGraphql size={26} />, color: '#e10098' },
+        { id: 10, name: 'Typescript', x: 40, y: 86, icon: <SiTypescript size={26} />, color: '#3178c6' },
         
         // Group 3: Data (x=65)
-        { id: 8, name: 'MongoDB', x: 65, y: 30, icon: <Server size={26} />, color: '#47a248' },
-        { id: 9, name: 'MySQL', x: 65, y: 50, icon: <Database size={26} />, color: '#4479a1' }, 
-        { id: 10, name: 'Firebase', x: 65, y: 70, icon: <Zap size={26} />, color: '#ffca28' },
+        { id: 11, name: 'PostgreSQL', x: 65, y: 15, icon: <SiPostgresql size={26} />, color: '#336791' },
+        { id: 12, name: 'MongoDB', x: 65, y: 32, icon: <SiMongodb size={26} />, color: '#47a248' },
+        { id: 13, name: 'MySQL', x: 65, y: 50, icon: <SiMysql size={26} />, color: '#4479a1' }, 
+        { id: 14, name: 'Redis', x: 65, y: 68, icon: <SiRedis size={26} />, color: '#dc382d' },
+        { id: 15, name: 'Firebase', x: 65, y: 86, icon: <SiFirebase size={26} />, color: '#ffca28' },
         
-        // Group 4: Cloud (x=90)
-        { id: 11, name: 'Docker', x: 90, y: 20, icon: <Container size={26} />, color: '#2496ed' },
-        { id: 12, name: 'Cloud Ops', x: 90, y: 50, icon: <Cloud size={26} />, color: '#0ea5e9' }, 
-        { id: 13, name: 'Linux Env', x: 90, y: 80, icon: <ShieldCheck size={26} />, color: '#fcc624' },
+        // Group 4: Cloud & DevOps (x=90)
+        { id: 16, name: 'AWS', x: 90, y: 15, icon: <FaAws size={26} />, color: '#ff9900' },
+        { id: 17, name: 'Docker', x: 90, y: 32, icon: <FaDocker size={26} />, color: '#2496ed' },
+        { id: 18, name: 'Kubernetes', x: 90, y: 50, icon: <SiKubernetes size={26} />, color: '#326ce5' }, // Orchestration
+        { id: 19, name: 'Linux Env', x: 90, y: 68, icon: <FaLinux size={26} />, color: '#fcc624' },
+        { id: 20, name: 'Git / CI', x: 90, y: 86, icon: <FaGitAlt size={26} />, color: '#f05032' },
     ];
 
     const connections = [

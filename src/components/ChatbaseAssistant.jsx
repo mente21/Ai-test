@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useProjects } from '../hooks/useProjects';
 import { useCollection } from '../hooks/useCollection';
+import { MessageSquare, X, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /**
  * Enhanced Chatbase AI Assistant with Dynamic Firebase Data
@@ -10,10 +12,7 @@ import { useCollection } from '../hooks/useCollection';
  * - Firebase for real-time project data
  * - Dynamic context injection so AI always knows latest projects
  * 
- * How it works:
- * 1. Fetches latest projects from Firebase
- * 2. Injects them into Chatbase conversations
- * 3. AI always has up-to-date information
+ * Update: Implements CUSTOM UI LAUNCHER to fix open/close toggle issues.
  */
 
 const ChatbaseAssistant = () => {
@@ -21,9 +20,10 @@ const ChatbaseAssistant = () => {
   const { data: skills, loading: sLoading } = useCollection('skills');
   const { data: experience, loading: eLoading } = useCollection('experience');
   const [chatbaseReady, setChatbaseReady] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Chatbase configuration
+    // Chatbase configuration - Hide default launcher to use our custom one
     window.embeddedChatbotConfig = {
       chatbotId: "iewClPvy5zF7KuKHOcrUR",
       domain: "www.chatbase.co"
@@ -80,7 +80,6 @@ Status: Current Portfolio Status is LIVE with dynamic data.
       `;
 
       // Inject EVERYTHING into Chatbase
-      // This works even on localhost!
       if (window.chatbase) {
         window.chatbase('setCustomData', {
           identitySummary: identitySummary,
@@ -109,8 +108,115 @@ ${expContext}
     }
   }, [chatbaseReady, pLoading, sLoading, eLoading, projects, skills, experience]);
 
-  // Chatbase handles the UI automatically
-  return null;
+  const toggleChat = () => {
+    if (window.chatbase) {
+      if (isOpen) {
+        window.chatbase('close'); // Explicit close
+      } else {
+        window.chatbase('open'); // Explicit open
+      }
+      setIsOpen(!isOpen);
+    }
+  };
+
+  if (!chatbaseReady) return null;
+
+  return (
+    <>
+      <style>{`
+        /* Hide default Chatbase bubble to prevent duplicates/issues */
+        #chatbase-bubble-button { display: none !important; }
+        iframe#chatbase-bubble-window { bottom: 100px !important; right: 30px !important; }
+      `}</style>
+      
+      <AnimatePresence>
+        {!isOpen && chatbaseReady && (
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 10 }}
+            transition={{ delay: 1.5, duration: 0.5 }}
+            style={{
+              position: 'fixed',
+              bottom: '42px',
+              right: '105px',
+              background: 'white',
+              color: 'black',
+              padding: '8px 16px',
+              borderRadius: '12px',
+              boxShadow: '0 5px 20px rgba(0,0,0,0.2)',
+              fontFamily: "'Manrope', sans-serif",
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              whiteSpace: 'nowrap',
+              zIndex: 99998,
+              pointerEvents: 'none'
+            }}
+          >
+            Ask AI Assistant
+            <div style={{
+              position: 'absolute',
+              right: '-6px',
+              top: '50%',
+              transform: 'translateY(-50%) rotate(45deg)',
+              width: '12px',
+              height: '12px',
+              background: 'white',
+              zIndex: -1
+            }} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      <motion.button
+        className="chat-toggle-btn"
+        onClick={toggleChat}
+        initial={{ scale: 0, rotate: 180 }}
+        animate={{ scale: 1, rotate: 0 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        style={{
+          position: 'fixed',
+          bottom: '30px',
+          right: '30px',
+          width: '60px',
+          height: '60px',
+          borderRadius: '50%',
+          background: 'var(--accent-primary)',
+          border: 'none',
+          boxShadow: '0 10px 30px rgba(255, 107, 0, 0.4)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          cursor: 'pointer',
+          zIndex: 99999
+        }}
+      >
+        <AnimatePresence mode="wait">
+          {isOpen ? (
+            <motion.div 
+              key="close"
+              initial={{ opacity: 0, rotate: -90 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: 90 }}
+            >
+              <X size={28} />
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="chat"
+              initial={{ opacity: 0, rotate: 90 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: -90 }}
+            >
+              <MessageSquare size={28} fill="white" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.button>
+    </>
+  );
 };
 
 export default ChatbaseAssistant;

@@ -4,10 +4,9 @@ import { Github, Linkedin, Instagram, Twitter, ExternalLink, Mail, ArrowRight } 
 import { useCollection } from '../hooks/useCollection';
 
 const GlowingLines = () => {
-  // Generate a tight bunch of parallel "snake" paths with multi-segment curves
-  const paths = Array.from({ length: 15 }).map((_, i) => {
-    const offset = i * 22; // Tight spacing
-    // Wavy snake shape using a multi-segment path
+  // Reduced count for better performance without losing effect
+  const paths = Array.from({ length: 8 }).map((_, i) => {
+    const offset = i * 40; // Adjusted spacing to cover similar area with fewer lines
     return `M ${-450 + offset} 1200 Q ${-100 + offset} 600, ${300 + offset} 900 T ${800 + offset} 300 T ${1300 + offset} -100`;
   });
 
@@ -18,8 +17,11 @@ const GlowingLines = () => {
       height: '100%',
       overflow: 'hidden',
       zIndex: -1,
-      opacity: 0.8,
-      transform: 'scale(1.4)'
+      opacity: 0.6, // Slightly reduced opacity for cleaner look
+      transform: 'scale(1.4)',
+      // Apply filter to the container instead of individual paths for massive performance boost
+      // Using a simpler blur-based glow simulation if drop-shadow is still heavy
+      filter: 'drop-shadow(0 0 10px var(--accent-primary))'
     }}>
       <svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="none">
         {paths.map((d, i) => (
@@ -27,27 +29,24 @@ const GlowingLines = () => {
             key={i}
             d={d}
             stroke="var(--accent-primary)"
-            strokeWidth="7" // Even bolder
+            strokeWidth="5" // Slightly thinner to balance the "snake" look
             fill="none"
             strokeLinecap="round"
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ 
               pathLength: 1,
-              opacity: [0.3, 0.6, 0.3],
-              x: [0, 80, 0], // More flex
-              y: [0, -50, 0], // More flex
-              rotate: [-3, 3, -3],
-              skewX: [-4, 4, -4]
+              opacity: [0.2, 0.5, 0.2], // Reduced max opacity
+              x: [0, 60, 0], 
+              y: [0, -30, 0],
+              skewX: [-2, 2, -2] // Reduced skew processing
             }}
             transition={{ 
-              duration: 22 + (i * 0.8), // Much slower
+              duration: 18 + (i * 1.5), // Slower, smoother
               repeat: Infinity, 
               ease: "easeInOut",
-              delay: i * 0.15 // Staggered
+              delay: i * 0.2
             }}
-            style={{ 
-              filter: 'drop-shadow(0 0 15px var(--accent-primary))'
-            }}
+            // Removed individual filter style here
           />
         ))}
       </svg>
@@ -77,11 +76,11 @@ const HeroSection = () => {
     return () => clearInterval(timer);
   }, [roles.length]);
 
-  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 30 });
-  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 30 });
+  const mouseXSpring = useSpring(x, { stiffness: 100, damping: 30 }); // Softer spring
+  const mouseYSpring = useSpring(y, { stiffness: 100, damping: 30 });
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["20deg", "-20deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-20deg", "20deg"]);
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]); // Reduced tilt range
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
   const imageX = useTransform(mouseXSpring, [-0.5, 0.5], ["2%", "-2%"]);
   const imageY = useTransform(mouseYSpring, [-0.5, 0.5], ["2%", "-2%"]);
 
@@ -207,15 +206,21 @@ const HeroSection = () => {
         style={{ zIndex: 2, flex: '0 1 450px', display: 'flex', alignItems: 'center', justifyContent: 'center', perspective: '1500px' }}
       >
         <motion.div
-           style={{ rotateX, rotateY, transformStyle: 'preserve-3d', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-           animate={{ y: [0, -30, 0], rotateZ: [0, 2, 0, -2, 0] }}
-           transition={{ y: { duration: 6, repeat: Infinity, ease: "easeInOut" }, rotateZ: { duration: 12, repeat: Infinity, ease: "easeInOut" } }}
+           style={{ 
+             rotateX, rotateY, 
+             transformStyle: 'preserve-3d', 
+             width: '100%', height: '100%', 
+             display: 'flex', alignItems: 'center', justifyContent: 'center',
+             willChange: 'transform' // Performance optimization hint
+           }}
+           animate={{ y: [0, -20, 0] }} // Reduced float distance
+           transition={{ y: { duration: 6, repeat: Infinity, ease: "easeInOut" } }}
         >
           <div style={{
             position: 'relative', width: 'min(420px, 100%)', height: 'min(550px, 70vh)',
             padding: '12px', background: 'var(--card-bg)', border: '1px solid var(--border-color)',
             borderRadius: '24px', backdropFilter: 'blur(40px)',
-            boxShadow: '0 50px 100px -20px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 107, 0, 0.1)',
+            boxShadow: '0 30px 60px -10px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 107, 0, 0.05)', // Reduced shadow complexity
             display: 'flex', alignItems: 'center', justifyContent: 'center', transformStyle: 'preserve-3d'
           }}>
             <motion.div style={{ width: '100%', height: '100%', borderRadius: '16px', overflow: 'hidden', transform: 'translateZ(50px)', position: 'relative' }}>
@@ -240,9 +245,109 @@ const HeroSection = () => {
 
       <style>{`
         @keyframes shine { to { background-position: 200% center; } }
+        
+        /* Desktop & Large Tablets */
         @media (max-width: 1100px) {
-          section { flex-direction: column !important; padding: 140px 5% 60px !important; gap: 80px !important; }
-          div[style*="flex"] { width: 100% !important; flex: 1 1 auto !important; text-align: center !important; }
+          section { 
+            flex-direction: column !important; 
+            padding: 140px 5% 60px !important; 
+            gap: 60px !important; 
+          }
+          div[style*="flex"] { 
+            width: 100% !important; 
+            flex: 1 1 auto !important; 
+            text-align: center !important; 
+          }
+        }
+        
+        /* Tablets */
+        @media (max-width: 768px) {
+          section {
+            padding: 120px 5% 40px !important;
+            gap: 40px !important;
+            min-height: auto !important;
+          }
+          
+          /* Text content */
+          h1 {
+            font-size: clamp(2.5rem, 10vw, 4rem) !important;
+            margin-bottom: 15px !important;
+          }
+          
+          h2 {
+            font-size: clamp(1.5rem, 6vw, 2.5rem) !important;
+          }
+          
+          p {
+            font-size: 0.95rem !important;
+            max-width: 100% !important;
+          }
+          
+          /* Portrait card */
+          div[style*="420px"] {
+            width: min(350px, 90vw) !important;
+            height: min(450px, 60vh) !important;
+          }
+          
+          /* Button */
+          a.btn {
+            padding: 12px 30px !important;
+            font-size: 0.8rem !important;
+          }
+        }
+        
+        /* Mobile */
+        @media (max-width: 480px) {
+          section {
+            padding: 100px 4% 30px !important;
+            gap: 30px !important;
+          }
+          
+          /* Hide decorative line on mobile */
+          div[style*="width: 35px"] {
+            display: none !important;
+          }
+          
+          span[style*="INDUSTRIAL DESIGN"] {
+            font-size: 0.65rem !important;
+            letter-spacing: 4px !important;
+          }
+          
+          h1 {
+            font-size: 2.2rem !important;
+            line-height: 1.1 !important;
+          }
+          
+          h2 {
+            font-size: 1.4rem !important;
+          }
+          
+          p {
+            font-size: 0.9rem !important;
+            line-height: 1.6 !important;
+          }
+          
+          /* Portrait card */
+          div[style*="420px"] {
+            width: min(300px, 85vw) !important;
+            height: min(380px, 50vh) !important;
+            padding: 8px !important;
+          }
+          
+          /* Badge */
+          div[style*="PRIME HUB"] {
+            font-size: 0.7rem !important;
+            padding: 8px 20px !important;
+            letter-spacing: 4px !important;
+          }
+          
+          /* Button */
+          a.btn {
+            width: 100% !important;
+            justify-content: center !important;
+            padding: 12px 20px !important;
+            font-size: 0.75rem !important;
+          }
         }
       `}</style>
     </section>

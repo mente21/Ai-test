@@ -321,21 +321,67 @@ const ContactSection = () => {
             </div>
 
             <div style={{ 
-                marginTop: '120px', 
-                paddingTop: '40px', 
+                marginTop: '100px', 
                 borderTop: '1px solid var(--border-color)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                opacity: 0.5,
-                fontSize: '0.8rem',
-                letterSpacing: '2px',
-                color: 'var(--text-primary)',
-                flexWrap: 'wrap',
-                gap: '20px'
+                paddingTop: '60px',
+                paddingBottom: '20px'
             }}>
-                <div>© {new Date().getFullYear()} PORTFOLIO • INDUSTRIAL ARCHITECT</div>
-                <div>POWERED BY AI LOGIC</div>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    flexWrap: 'wrap',
+                    gap: '40px',
+                    marginBottom: '40px'
+                }}>
+                    {/* Brand & Identity */}
+                    <div style={{ maxWidth: '300px' }}>
+                        <h4 style={{ 
+                            fontSize: '1.5rem', 
+                            fontFamily: 'Anton', 
+                            color: 'var(--text-primary)', 
+                            letterSpacing: '1px', 
+                            textTransform: 'uppercase', 
+                            margin: '0 0 15px 0' 
+                        }}>
+                            Mentesnot Debele
+                        </h4>
+                        <p style={{ 
+                            fontSize: '0.9rem', 
+                            color: 'var(--text-secondary)', 
+                            fontFamily: "'Manrope', sans-serif", 
+                            lineHeight: 1.6,
+                            opacity: 0.7
+                        }}>
+                            Crafting advanced digital experiences with industrial precision and AI-driven logic.
+                        </p>
+                    </div>
+
+
+                </div>
+
+                {/* Footer Bottom Bar */}
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingTop: '30px',
+                    borderTop: '1px solid rgba(255,255,255,0.05)',
+                    fontSize: '0.75rem',
+                    color: 'var(--text-secondary)',
+                    letterSpacing: '1px',
+                    flexWrap: 'wrap',
+                    gap: '20px',
+                    fontFamily: "'Manrope', sans-serif",
+                    opacity: 0.6
+                }}>
+                    <div>
+                        © {new Date().getFullYear()} MENTESNOT DEBELE • INDUSTRIAL ARCHITECT
+                    </div>
+                    <div style={{ display: 'flex', gap: '20px' }}>
+                        <span>DESIGNED BY MENTESNOT DEBELE</span>
+                    </div>
+                </div>
             </div>
 
             <style>{`
@@ -343,9 +389,91 @@ const ContactSection = () => {
                     color: var(--text-secondary) !important;
                     opacity: 0.3;
                 }
+                
+                /* Tablets */
                 @media (max-width: 1024px) {
                     div[style*="grid-template-columns"] {
                         grid-template-columns: 1fr !important;
+                        gap: 30px !important;
+                    }
+                }
+                
+                /* Mobile */
+                @media (max-width: 768px) {
+                    section {
+                        padding: 60px 5% !important;
+                    }
+                    
+                    div[style*="grid-template-columns"] {
+                        gap: 25px !important;
+                    }
+                    
+                    /* Contact info cards */
+                    div[style*="padding: 30px"] {
+                        padding: 20px !important;
+                    }
+                    
+                    /* Form inputs */
+                    input, textarea {
+                        font-size: 0.9rem !important;
+                        padding: 14px !important;
+                    }
+                    
+                    /* Button */
+                    button[type="submit"] {
+                        padding: 16px !important;
+                        font-size: 0.9rem !important;
+                    }
+                    
+                    /* Footer */
+                    div[style*="border-top"] {
+                        flex-direction: column !important;
+                        gap: 20px !important;
+                        text-align: center !important;
+                    }
+                    
+                    div[style*="border-top"] > div {
+                        justify-content: center !important;
+                    }
+                }
+                
+                /* Small Mobile */
+                @media (max-width: 480px) {
+                    section {
+                        padding: 40px 4% !important;
+                    }
+                    
+                    h2 {
+                        font-size: 2rem !important;
+                    }
+                    
+                    p {
+                        font-size: 0.9rem !important;
+                    }
+                    
+                    div[style*="padding: 30px"], div[style*="padding: 20px"] {
+                        padding: 15px !important;
+                    }
+                    
+                    input, textarea {
+                        font-size: 0.85rem !important;
+                        padding: 12px !important;
+                    }
+                    
+                    button[type="submit"] {
+                        padding: 14px !important;
+                        font-size: 0.85rem !important;
+                    }
+                    
+                    /* Social icons */
+                    div[style*="gap: 20px"] a {
+                        width: 40px !important;
+                        height: 40px !important;
+                    }
+                    
+                    /* Footer text */
+                    div[style*="border-top"] span {
+                        font-size: 0.75rem !important;
                     }
                 }
             `}</style>

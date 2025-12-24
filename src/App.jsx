@@ -14,6 +14,7 @@ import EducationTimeline from './components/EducationTimeline';
 import CertificatesSection from './components/CertificatesSection';
 import TestimonialsSection from './components/TestimonialsSection';
 import SidebarNav from './components/SidebarNav';
+import ServicesSection from './components/ServicesSection';
 import ContactSection from './components/ContactSection';
 
 // Hooks
@@ -133,6 +134,10 @@ const PortfolioHome = () => {
       <CertificatesSection onOpenDetail={(item) => { setSelectedCertificate(item); setGalleryIndex(0); }} />
 
       <TestimonialsSection />
+
+
+
+      <ServicesSection />
 
       <ContactSection />
 
@@ -716,6 +721,86 @@ const PortfolioHome = () => {
         .modal-content-grid::-webkit-scrollbar-thumb {
           background: var(--border-color);
           border-radius: 10px;
+        }
+        
+        /* Responsive Modal Styles */
+        @media (max-width: 1024px) {
+          .modal-content-grid {
+            grid-template-columns: 1fr !important;
+            gap: 30px !important;
+            padding: 20px !important;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          /* Modal container */
+          div[style*="maxWidth: '1200px'"], 
+          div[style*="maxWidth: '1000px'"],
+          div[style*="max-width: 1200px"],
+          div[style*="max-width: 1000px"] {
+            max-width: 95vw !important;
+            margin: 20px !important;
+          }
+          
+          .modal-content-grid {
+            padding: 15px !important;
+            gap: 20px !important;
+          }
+          
+          /* Modal images */
+          div[style*="height: '450px'"],
+          div[style*="height: 450px"] {
+            height: 300px !important;
+          }
+          
+          /* Modal text */
+          h2[style*="fontSize: '3rem'"],
+          h2[style*="font-size: 3rem"] {
+            font-size: 2rem !important;
+          }
+          
+          /* Close button */
+          button[style*="top: '20px'"] {
+            top: 10px !important;
+            right: 10px !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          div[style*="maxWidth"],
+          div[style*="max-width"] {
+            max-width: 100vw !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+          }
+          
+          .modal-content-grid {
+            padding: 10px !important;
+            gap: 15px !important;
+          }
+          
+          div[style*="height: '450px'"],
+          div[style*="height: 450px"],
+          div[style*="height: 300px"] {
+            height: 250px !important;
+          }
+          
+          h2[style*="fontSize"],
+          h2[style*="font-size"] {
+            font-size: 1.5rem !important;
+          }
+          
+          p[style*="fontSize"],
+          p[style*="font-size"] {
+            font-size: 0.9rem !important;
+          }
+          
+          /* Navigation buttons in modals */
+          button[style*="width: '40px'"],
+          button[style*="width: 40px"] {
+            width: 35px !important;
+            height: 35px !important;
+          }
         }
       `}</style>
     </div>
