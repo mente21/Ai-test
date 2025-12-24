@@ -306,27 +306,27 @@ const PortfolioHome = () => {
                        <div style={{ padding: '6px 16px', borderRadius: '100px', background: 'rgba(255,107,0,0.1)', border: '1px solid var(--accent-primary)', color: 'var(--accent-primary)', fontSize: '0.65rem', fontWeight: 900, letterSpacing: '2px', textTransform: 'uppercase' }}>INDUSTRIAL CASE STUDY</div>
                     </div>
                     
-                    <motion.h2 
-                      layoutId={`title-${selectedProject.id || projects.indexOf(selectedProject)}`}
-                      style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontFamily: 'Anton', color: 'var(--text-primary)', lineHeight: 1, marginBottom: '24px', letterSpacing: '1px' }}
-                    >
-                      {selectedProject.title}
-                    </motion.h2>
+                      <motion.h2 
+                        layoutId={`title-${selectedProject.id || projects.indexOf(selectedProject)}`}
+                        style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontFamily: 'Anton', color: 'var(--text-primary)', lineHeight: 1, marginBottom: '24px', letterSpacing: '1px', textTransform: 'uppercase' }}
+                      >
+                        {selectedProject.title}
+                      </motion.h2>
                     <div style={{ width: '60px', height: '4px', background: 'var(--accent-primary)', marginBottom: '30px' }}></div>
 
-                    <motion.p 
-                      layoutId={`desc-${selectedProject.id || projects.indexOf(selectedProject)}`}
-                      style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '40px', fontWeight: 300, opacity: 0.9 }}
-                    >
-                      {selectedProject.desc}
-                    </motion.p>
+                      <motion.p 
+                        layoutId={`desc-${selectedProject.id || projects.indexOf(selectedProject)}`}
+                        style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '40px', fontFamily: "'Manrope', sans-serif", fontWeight: 400, opacity: 0.9 }}
+                      >
+                        {selectedProject.desc}
+                      </motion.p>
 
                     <div style={{ marginTop: 'auto' }}>
                        <div style={{ marginBottom: '40px' }}>
-                          <div style={{ fontSize: '0.65rem', color: 'var(--accent-primary)', letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '16px', fontWeight: 900 }}>SYSTEM ARCHITECTURE</div>
+                          <div style={{ fontSize: '0.9rem', color: 'var(--accent-primary)', fontFamily: "'Oswald', sans-serif", letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px', fontWeight: 600 }}>SYSTEM ARCHITECTURE</div>
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                              {(selectedProject.tags || selectedProject.tech)?.map((tag, it) => (
-                               <span key={it} style={{ padding: '8px 18px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)', borderRadius: '10px', fontSize: '0.8rem', color: 'var(--text-primary)', fontWeight: 500, letterSpacing: '0.5px' }}>{tag}</span>
+                               <span key={it} style={{ padding: '8px 18px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)', borderRadius: '10px', fontSize: '0.8rem', color: 'var(--text-primary)', fontFamily: "'Oswald', sans-serif", fontWeight: 500, letterSpacing: '0.5px', textTransform: 'uppercase' }}>{tag}</span>
                              ))}
                           </div>
                        </div>
@@ -344,10 +344,10 @@ const PortfolioHome = () => {
                               background: 'var(--text-primary)',
                               color: 'var(--bg-color)',
                               borderRadius: '16px',
-                              fontFamily: 'Anton',
+                              fontFamily: "'Oswald', sans-serif",
                               fontSize: '1.1rem',
-                              letterSpacing: '4px',
-                              fontWeight: 900,
+                              letterSpacing: '2px',
+                              fontWeight: 600,
                               textTransform: 'uppercase',
                               textAlign: 'center',
                               textDecoration: 'none',
@@ -374,10 +374,10 @@ const PortfolioHome = () => {
                                 color: 'var(--text-primary)',
                                 border: '1px solid var(--border-color)',
                                 borderRadius: '16px',
-                                fontFamily: 'Anton',
+                                fontFamily: "'Oswald', sans-serif",
                                 fontSize: '1rem',
-                                letterSpacing: '3px',
-                                fontWeight: 900,
+                                letterSpacing: '2px',
+                                fontWeight: 600,
                                 textTransform: 'uppercase',
                                 textAlign: 'center',
                                 textDecoration: 'none',
@@ -521,19 +521,19 @@ const PortfolioHome = () => {
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', padding: '10px 0' }}>
-                    <div style={{ fontSize: '0.65rem', color: selectedEducation.color, letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '16px', fontWeight: 900 }}>ACADEMIC RECORD</div>
-                    <h2 style={{ fontSize: '3rem', fontFamily: 'Anton', color: 'var(--text-primary)', lineHeight: 1.1, marginBottom: '20px' }}>
-                      {selectedEducation.degree}
-                    </h2>
+                    <div style={{ fontSize: '0.8rem', color: selectedEducation.color, fontFamily: "'Oswald', sans-serif", letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px', fontWeight: 600 }}>ACADEMIC RECORD</div>
+                      <h2 style={{ fontSize: '3rem', fontFamily: 'Anton', color: 'var(--text-primary)', lineHeight: 1.1, marginBottom: '20px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                        {selectedEducation.degree}
+                      </h2>
                     <div style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: '30px', fontWeight: 500 }}>
                       {selectedEducation.school}
                     </div>
                     <div style={{ width: '60px', height: '4px', background: selectedEducation.color, marginBottom: '30px' }}></div>
-                    <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '40px', opacity: 0.9 }}>
-                      {selectedEducation.desc || "Comprehensive institutional training focusing on advanced computational concepts."}
-                    </p>
+                      <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '40px', fontFamily: "'Manrope', sans-serif", fontWeight: 400, opacity: 0.9 }}>
+                        {selectedEducation.desc || "Comprehensive institutional training focusing on advanced computational concepts."}
+                      </p>
                     <div style={{ marginTop: 'auto', padding: '20px', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: `1px dashed ${selectedEducation.color}44` }}>
-                      <div style={{ fontSize: '0.7rem', color: selectedEducation.color, fontWeight: 900, letterSpacing: '2px', marginBottom: '5px' }}>VALIDATION TIMESTAMP</div>
+                      <div style={{ fontSize: '0.8rem', color: selectedEducation.color, fontFamily: "'Oswald', sans-serif", fontWeight: 600, letterSpacing: '2px', marginBottom: '5px', textTransform: 'uppercase' }}>VALIDATION TIMESTAMP</div>
                       <div style={{ fontSize: '1rem', color: 'var(--text-primary)', fontWeight: 600 }}>{selectedEducation.year}</div>
                     </div>
                   </div>
@@ -664,17 +664,17 @@ const PortfolioHome = () => {
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', padding: '10px 0' }}>
-                    <div style={{ fontSize: '0.65rem', color: selectedCertificate.color, letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '16px', fontWeight: 900 }}>PROFESSIONAL VALIDATION</div>
-                    <h2 style={{ fontSize: '3rem', fontFamily: 'Anton', color: 'var(--text-primary)', lineHeight: 1.1, marginBottom: '20px' }}>
-                      {selectedCertificate.title}
-                    </h2>
+                    <div style={{ fontSize: '0.8rem', color: selectedCertificate.color, fontFamily: "'Oswald', sans-serif", letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '16px', fontWeight: 600 }}>PROFESSIONAL VALIDATION</div>
+                      <h2 style={{ fontSize: '3rem', fontFamily: 'Anton', color: 'var(--text-primary)', lineHeight: 1.1, marginBottom: '20px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                        {selectedCertificate.title}
+                      </h2>
                     <div style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: '30px', fontWeight: 500 }}>
                       {selectedCertificate.issuer}
                     </div>
                     <div style={{ width: '60px', height: '4px', background: selectedCertificate.color, marginBottom: '30px' }}></div>
-                    <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '40px', opacity: 0.9 }}>
-                      {selectedCertificate.desc || selectedCertificate.description || "Official certification validating professional competency in industry-standard technologies and methodologies."}
-                    </p>
+                      <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.8, marginBottom: '40px', fontFamily: "'Manrope', sans-serif", fontWeight: 400, opacity: 0.9 }}>
+                        {selectedCertificate.desc || selectedCertificate.description || "Official certification validating professional competency in industry-standard technologies and methodologies."}
+                      </p>
 
                     <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
                        {selectedCertificate.link && (
@@ -697,7 +697,7 @@ const PortfolioHome = () => {
                        )}
                        
                        <div style={{ padding: '20px', background: 'rgba(255,255,255,0.02)', borderRadius: '20px', border: `1px dashed ${selectedCertificate.color}44` }}>
-                         <div style={{ fontSize: '0.7rem', color: selectedCertificate.color, fontWeight: 900, letterSpacing: '2px', marginBottom: '5px' }}>ISSUE DATE</div>
+                         <div style={{ fontSize: '0.8rem', color: selectedCertificate.color, fontFamily: "'Oswald', sans-serif", fontWeight: 600, letterSpacing: '2px', marginBottom: '5px', textTransform: 'uppercase' }}>ISSUE DATE</div>
                          <div style={{ fontSize: '1rem', color: 'var(--text-primary)', fontWeight: 600 }}>{selectedCertificate.date}</div>
                        </div>
                     </div>

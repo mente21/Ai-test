@@ -194,7 +194,8 @@ const TechExpertise = () => {
                 <div style={{ 
                     fontSize: '0.7rem', 
                     color: 'var(--accent-primary)', 
-                    fontWeight: 900, 
+                    fontWeight: 600, 
+                    fontFamily: "'Oswald', sans-serif",
                     letterSpacing: '4px', 
                     marginBottom: '20px',
                     textAlign: 'center',
@@ -263,7 +264,8 @@ const TechExpertise = () => {
                                     color: 'var(--text-secondary)', 
                                     lineHeight: 1.6, 
                                     margin: 0, 
-                                    fontWeight: 300,
+                                    fontWeight: 400,
+                                    fontFamily: "'Manrope', sans-serif",
                                     maxWidth: '800px',
                                     opacity: 0.8
                                 }}>
@@ -274,7 +276,7 @@ const TechExpertise = () => {
                             {/* Right: Status & Waveform */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '30px', flexShrink: 0 }}>
                                 <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: '0.6rem', color: 'var(--accent-primary)', fontWeight: 900, letterSpacing: '2px', marginBottom: '4px' }}>SYSTEM STATUS</div>
+                                    <div style={{ fontSize: '0.6rem', color: 'var(--accent-primary)', fontWeight: 600, fontFamily: "'Oswald', sans-serif", letterSpacing: '2px', marginBottom: '4px', textTransform: 'uppercase' }}>SYSTEM STATUS</div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end' }}>
                                         <motion.div 
                                             animate={{ opacity: [1, 0.4, 1] }} 

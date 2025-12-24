@@ -214,13 +214,13 @@ const EducationTimeline = ({ onOpenDetail }) => {
                   )}
 
                   <div style={{ padding: '24px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '0.7rem', color: item.color, fontWeight: 900, letterSpacing: '4px', marginBottom: '10px', textTransform: 'uppercase' }}>
+                    <div style={{ fontSize: '0.9rem', color: item.color, fontWeight: 600, fontFamily: "'Oswald', sans-serif", letterSpacing: '4px', marginBottom: '10px', textTransform: 'uppercase' }}>
                       {item.year}
                     </div>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 400, color: 'var(--text-primary)', marginBottom: '6px', fontFamily: 'Anton' }}>
+                    <div style={{ fontSize: '1.25rem', fontWeight: 400, color: 'var(--text-primary)', marginBottom: '6px', fontFamily: 'Anton', textTransform: 'uppercase', letterSpacing: '1px' }}>
                       {item.degree}
                     </div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 500, letterSpacing: '1px' }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 400, fontFamily: "'Manrope', sans-serif", letterSpacing: '1px' }}>
                       {item.school}
                     </div>
                   </div>

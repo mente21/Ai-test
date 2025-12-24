@@ -87,7 +87,8 @@ const ContactSection = () => {
         letterSpacing: '2px', 
         textTransform: 'uppercase', 
         marginBottom: '6px',
-        fontWeight: 700,
+        fontWeight: 600,
+        fontFamily: "'Oswald', sans-serif",
         opacity: 0.6
     };
 
@@ -97,7 +98,7 @@ const ContactSection = () => {
         fontWeight: 400, // Natural weight
         letterSpacing: '0.5px',
         wordBreak: 'break-all',
-        fontFamily: 'Inter, system-ui, sans-serif' // Cleaner font
+        fontFamily: "'Manrope', sans-serif"
     };
 
     return (
@@ -148,7 +149,8 @@ const ContactSection = () => {
                         lineHeight: 1.8,
                         marginBottom: '60px',
                         maxWidth: '400px',
-                        fontWeight: 300
+                        fontWeight: 400,
+                        fontFamily: "'Manrope', sans-serif"
                     }}>
                         {dynamicContact.desc}
                     </p>
@@ -226,7 +228,7 @@ const ContactSection = () => {
                 >
                     <form onSubmit={handleEmailTransmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
                         <div style={{ gridColumn: 'span 1' }}>
-                            <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Your Name</label>
+                            <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px', fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>Your Name</label>
                             <input 
                                 type="text" 
                                 name="name"
@@ -239,14 +241,14 @@ const ContactSection = () => {
                                     padding: '16px 20px',
                                     borderRadius: '12px',
                                     color: 'var(--text-primary)',
-                                    fontFamily: 'Anton',
+                                    fontFamily: "'Manrope', sans-serif",
                                     letterSpacing: '1px',
                                     outline: 'none'
                                 }}
                             />
                         </div>
                         <div style={{ gridColumn: 'span 1' }}>
-                            <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Email Address</label>
+                            <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px', fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>Email Address</label>
                             <input 
                                 type="email" 
                                 name="email"
@@ -259,14 +261,14 @@ const ContactSection = () => {
                                     padding: '16px 20px',
                                     borderRadius: '12px',
                                     color: 'var(--text-primary)',
-                                    fontFamily: 'Anton',
+                                    fontFamily: "'Manrope', sans-serif",
                                     letterSpacing: '1px',
                                     outline: 'none'
                                 }}
                             />
                         </div>
                         <div style={{ gridColumn: 'span 2' }}>
-                            <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px' }}>Your Message</label>
+                            <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px', fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>Your Message</label>
                             <textarea 
                                 name="message"
                                 rows="6"
@@ -279,7 +281,7 @@ const ContactSection = () => {
                                     padding: '16px 20px',
                                     borderRadius: '12px',
                                     color: 'var(--text-primary)',
-                                    fontFamily: 'Anton',
+                                    fontFamily: "'Manrope', sans-serif",
                                     letterSpacing: '1px',
                                     outline: 'none',
                                     resize: 'none'
@@ -298,10 +300,10 @@ const ContactSection = () => {
                                     color: 'white',
                                     border: 'none',
                                     borderRadius: '12px',
-                                    fontFamily: 'Anton',
+                                    fontFamily: "'Oswald', sans-serif",
                                     fontSize: '1rem',
                                     letterSpacing: '4px',
-                                    fontWeight: 900,
+                                    fontWeight: 600,
                                     textTransform: 'uppercase',
                                     cursor: 'pointer',
                                     display: 'flex',

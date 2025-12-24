@@ -89,7 +89,7 @@ const CertificatesSection = ({ onOpenDetail }) => {
           <span className="section-title-accent">CERTIFIED</span> 
           <span className="section-title-stroke">EXCELLENCE</span>
         </h2>
-        <p style={{ color: 'var(--text-secondary)', letterSpacing: '4px', textTransform: 'uppercase' }}>
+        <p style={{ color: 'var(--text-secondary)', letterSpacing: '4px', textTransform: 'uppercase', fontFamily: "'Manrope', sans-serif", fontWeight: 400 }}>
           Validating the boundaries of technology
         </p>
       </motion.div>
@@ -183,7 +183,7 @@ const CertificatesSection = ({ onOpenDetail }) => {
                   }}>
                     <Award size={28} />
                   </div>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 900, color: 'var(--text-secondary)', letterSpacing: '2px' }}>VERIFIED</span>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 600, fontFamily: "'Oswald', sans-serif", color: 'var(--text-secondary)', letterSpacing: '2px' }}>VERIFIED</span>
                 </div>
 
                 {/* Certificate Image Preview */}
@@ -211,15 +211,15 @@ const CertificatesSection = ({ onOpenDetail }) => {
                 </div>
 
                 <div style={{ marginTop: '10px' }}>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: '8px', fontFamily: 'Anton' }}>{cert.title}</h3>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: cert.color, fontWeight: 700, fontSize: '0.85rem' }}>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: '8px', fontFamily: 'Anton', textTransform: 'uppercase', letterSpacing: '1px' }}>{cert.title}</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: cert.color, fontWeight: 600, fontFamily: "'Oswald', sans-serif", fontSize: '0.9rem' }}>
                     <span>{cert.issuer}</span>
                     <span style={{ opacity: 0.3 }}>•</span>
                     <span>{cert.date}</span>
                   </div>
                 </div>
 
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, fontFamily: "'Manrope', sans-serif", fontWeight: 400 }}>
                   {cert.description}
                 </p>
 
@@ -238,7 +238,8 @@ const CertificatesSection = ({ onOpenDetail }) => {
                       border: 'none',
                       padding: '15px',
                       borderRadius: '15px',
-                      fontWeight: 900,
+                      fontWeight: 600,
+                      fontFamily: "'Oswald', sans-serif",
                       fontSize: '0.8rem',
                       letterSpacing: '1px',
                       display: 'flex',

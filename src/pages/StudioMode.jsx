@@ -522,7 +522,9 @@ const StudioMode = () => {
             <label>Stats (e.g. 5+ YEARS, 99% UPTIME - Comma separated)</label>
             <input className="studio-input" value={formData.stats || ''} onChange={e => handleInputChange('stats', e.target.value)} placeholder="5+ YEARS, 40+ BUILDS" />
           </div>
-          {renderImageUpload()}
+          {renderImageUpload('imageUrl', 'Main Profile Image')}
+          <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '20px 0' }}></div>
+          {renderGalleryManager()}
         </>
       );
     }

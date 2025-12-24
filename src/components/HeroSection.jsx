@@ -138,9 +138,20 @@ const HeroSection = () => {
           <span style={{ color: 'var(--accent-primary)', letterSpacing: '8px', fontSize: '0.75rem', fontWeight: 900 }}>INDUSTRIAL DESIGN</span>
         </div>
 
-        <h1 style={{ fontSize: 'clamp(3.5rem, 5vw, 5rem)', margin: 0, color: 'var(--text-primary)' }}>
-          {dynamicHome.title.split(' ')[0]}<br/>
-          {dynamicHome.title.split(' ').slice(1).join(' ')}
+        <h1 style={{ 
+          fontSize: 'clamp(3rem, 6vw, 5.5rem)', 
+          margin: 0, 
+          color: 'var(--text-primary)',
+          fontFamily: 'Anton',
+          textTransform: 'uppercase',
+          letterSpacing: '2px',
+          lineHeight: 1.1,
+          marginBottom: '20px',
+          textShadow: '0 10px 30px rgba(0,0,0,0.3)',
+          display: 'inline-block'
+        }}>
+          Mentesnot<br/>
+          Debele
         </h1>
 
         <div style={{ margin: '20px 0' }}>
@@ -172,7 +183,7 @@ const HeroSection = () => {
 
         <p style={{ 
           color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.8, maxWidth: '420px',
-          fontWeight: 300, marginTop: '10px'
+          fontFamily: "'Manrope', sans-serif", fontWeight: 300, marginTop: '10px'
         }}>
           {dynamicHome.desc || "Specializing in premium high-performance digital architectures and high-impact industrial aesthetics for global brands."}
         </p>

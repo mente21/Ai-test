@@ -120,8 +120,9 @@ const ProjectCard = ({ project, index, onExpand }) => {
             marginBottom: '12px', 
             fontWeight: 800, 
             color: 'var(--text-primary)',
-            letterSpacing: '-0.5px',
-            fontFamily: 'Anton'
+            letterSpacing: '1px',
+            fontFamily: 'Anton',
+            textTransform: 'uppercase'
           }}
         >
           {project.title}
@@ -137,7 +138,9 @@ const ProjectCard = ({ project, index, onExpand }) => {
               display: '-webkit-box',
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
-              overflow: 'hidden'
+              overflow: 'hidden',
+              fontFamily: "'Manrope', sans-serif",
+              fontWeight: 400
             }}
         >
           {project.desc}

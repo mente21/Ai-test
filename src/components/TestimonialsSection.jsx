@@ -94,7 +94,7 @@ const TestimonialsSection = () => {
             boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
         }}>
             <MessageSquare size={18} className="gradient-text" />
-            <span style={{ fontSize: '0.8rem', fontWeight: 800, letterSpacing: '4px', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Voice of Clients</span>
+            <span style={{ fontSize: '0.8rem', fontWeight: 600, fontFamily: "'Oswald', sans-serif", letterSpacing: '4px', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Voice of Clients</span>
         </div>
         <h2 className="section-title-premium">
           <span className="section-title-accent">ECHOES</span> OF <span className="section-title-stroke">TRUST</span>
@@ -185,8 +185,9 @@ const TestimonialsSection = () => {
                     fontSize: '1.25rem',
                     color: 'var(--text-primary)',
                     lineHeight: 1.6,
-                    fontStyle: 'italic',
+                    fontStyle: 'normal',
                     fontWeight: 400,
+                    fontFamily: "'Manrope', sans-serif",
                     opacity: 0.9,
                     marginBottom: '40px'
                 }}>
@@ -206,7 +207,7 @@ const TestimonialsSection = () => {
                         </div>
                     </div>
                     <div>
-                        <h4 style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.1rem', margin: 0 }}>{test.name}</h4>
+                        <h4 style={{ color: 'var(--text-primary)', fontWeight: 800, fontSize: '1.1rem', margin: 0, fontFamily: 'Anton', textTransform: 'uppercase', letterSpacing: '1px' }}>{test.name}</h4>
                         {test.handle && (
                           <a 
                             href={test.socialLink || '#'} 
@@ -219,6 +220,7 @@ const TestimonialsSection = () => {
                               display: 'block',
                               marginTop: '2px',
                               fontWeight: 600,
+                              fontFamily: "'Oswald', sans-serif",
                               opacity: test.socialLink ? 1 : 0.8
                             }}
                           >
