@@ -39,7 +39,7 @@ const SidebarNav = () => {
   // High-performance abstract placeholder
   const DEFAULT_PLACEHOLDER = "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1000";
 
-  const sidebarImage = (!loading && homeData?.[0]?.sidebarImage) ? homeData[0].sidebarImage : DEFAULT_PLACEHOLDER;
+  const sidebarImage = "/logo.svg";
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -69,7 +69,7 @@ const SidebarNav = () => {
         position: 'fixed',
         left: '24px',
         top: '15px',
-        width: '74px',
+        width: '80px',
         height: 'auto',
         maxHeight: '96vh',
         background: 'var(--sidebar-bg)',
@@ -89,29 +89,30 @@ const SidebarNav = () => {
       <motion.div 
         whileHover={{ scale: 1.1 }}
         style={{
-          width: '50px',
-          height: '50px',
-          borderRadius: '50%',
-          border: '2px solid var(--accent-primary)',
+          width: '64px',
+          height: '64px',
+          borderRadius: '16px',
           overflow: 'hidden',
-          marginBottom: '5px',
+          marginBottom: '10px',
           cursor: 'pointer',
-          padding: '3px',
-          flexShrink: 0
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'transparent'
         }}
       >
         {(!avatarLoaded || loading) && (
-          <div className="skeleton" style={{ width: '100%', height: '100%', borderRadius: '50%' }}></div>
+          <div className="skeleton" style={{ width: '100%', height: '100%', borderRadius: '16px' }}></div>
         )}
         <img 
           src={sidebarImage} 
-          alt="Profile" 
+          alt="Logo" 
           onLoad={() => setAvatarLoaded(true)}
           style={{ 
             width: '100%', 
             height: '100%', 
-            borderRadius: '50%', 
-            objectFit: 'cover',
+            objectFit: 'contain',
             opacity: avatarLoaded && !loading ? 1 : 0,
             transition: 'opacity 0.3s ease'
           }}
@@ -150,7 +151,7 @@ const SidebarNav = () => {
               {hoveredItem === item.id && (
                 <motion.div
                   initial={{ opacity: 0, x: -10, scale: 0.9 }}
-                  animate={{ opacity: 1, x: 74, scale: 1 }}
+                  animate={{ opacity: 1, x: 80, scale: 1 }}
                   exit={{ opacity: 0, x: -10, scale: 0.9 }}
                   style={{
                     position: 'absolute',
