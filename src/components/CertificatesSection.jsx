@@ -94,7 +94,7 @@ const CertificatesSection = ({ onOpenDetail }) => {
         </p>
       </motion.div>
 
-      <div style={{
+      <div className="certificates-container" style={{ 
         position: 'relative',
         width: '100%',
         maxWidth: '1200px',
@@ -132,6 +132,7 @@ const CertificatesSection = ({ onOpenDetail }) => {
                 stiffness: 240,
                 damping: 24
               }}
+              className={`cert-3d-card ${isFront ? 'active-front' : ''}`}
               style={{
                 position: 'absolute',
                 width: '400px',
@@ -147,83 +148,32 @@ const CertificatesSection = ({ onOpenDetail }) => {
                   width: '100%',
                   height: '100%',
                   background: 'var(--card-bg)',
-                  backdropFilter: 'var(--glass-blur)',
-                  borderRadius: '30px',
-                  border: `2px solid ${isFront ? cert.color : 'var(--border-color)'}`,
-                  padding: '40px',
+                  borderRadius: '32px',
+                  border: `1.5px solid ${cert.color}44`,
+                  padding: '30px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '20px',
-                  boxShadow: isFront ? `0 25px 50px rgba(0,0,0,0.1), 0 0 30px ${cert.color}22` : 'none',
-                  transition: 'all 0.5s ease',
-                  position: 'relative',
-                  overflow: 'hidden'
+                  boxShadow: isFront ? `0 20px 40px rgba(0,0,0,0.3), 0 0 20px ${cert.color}22` : 'none'
                 }}
               >
-                <div style={{
-                  position: 'absolute',
-                  top: '-50px',
-                  right: '-50px',
-                  width: '150px',
-                  height: '150px',
-                  background: `radial-gradient(circle, ${cert.color}22 0%, transparent 70%)`,
-                  borderRadius: '50%'
-                }} />
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ 
-                    width: '50px', 
-                    height: '50px', 
-                    background: `${cert.color}22`, 
-                    borderRadius: '12px', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    color: cert.color
-                  }}>
-                    <Award size={28} />
-                  </div>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 600, fontFamily: "'Oswald', sans-serif", color: 'var(--text-secondary)', letterSpacing: '2px' }}>VERIFIED</span>
+                <div className="cert-image-container" style={{ width: '100%', height: '200px', borderRadius: '16px', overflow: 'hidden', marginBottom: '25px', background: 'rgba(0,0,0,0.1)' }}>
+                  <img src={cert.imageUrl} alt={cert.title} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
 
-                {/* Certificate Image Preview */}
-                <div style={{ 
-                    width: '100%', 
-                    height: '180px', 
-                    borderRadius: '20px', 
-                    overflow: 'hidden', 
-                    background: 'var(--input-bg)',
-                    border: '1px solid var(--border-color)',
-                    position: 'relative'
-                }}>
-                    <motion.img 
-                        transition={{ duration: 0.6 }}
-                        src={cert.imageUrl} 
-                        alt={cert.title} 
-                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
-                    <div style={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: `linear-gradient(to top, rgba(0,0,0,0.4), transparent)`,
-                        pointerEvents: 'none'
-                    }} />
-                </div>
-
-                <div style={{ marginTop: '10px' }}>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: '8px', fontFamily: 'Anton', textTransform: 'uppercase', letterSpacing: '1px' }}>{cert.title}</h3>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: cert.color, fontWeight: 600, fontFamily: "'Oswald', sans-serif", fontSize: '0.9rem' }}>
+                <div className="cert-content-wrapper" style={{ marginTop: '10px' }}>
+                  <h3 className="cert-title" style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: '8px', fontFamily: 'Anton', textTransform: 'uppercase', letterSpacing: '1px' }}>{cert.title}</h3>
+                  <div className="cert-metadata" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: cert.color, fontWeight: 600, fontFamily: "'Oswald', sans-serif", fontSize: '0.9rem' }}>
                     <span>{cert.issuer}</span>
                     <span style={{ opacity: 0.3 }}>•</span>
                     <span>{cert.date}</span>
                   </div>
                 </div>
 
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, fontFamily: "'Manrope', sans-serif", fontWeight: 400 }}>
+                <p className="cert-description" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, fontFamily: "'Manrope', sans-serif", fontWeight: 400 }}>
                   {cert.description}
                 </p>
 
-                <div style={{ marginTop: 'auto', display: 'flex', gap: '15px' }}>
+                <div className="cert-button-container" style={{ marginTop: 'auto', display: 'flex', gap: '15px' }}>
                   <motion.button 
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -264,7 +214,7 @@ const CertificatesSection = ({ onOpenDetail }) => {
         })}
       </div>
 
-      <div style={{ display: 'flex', gap: '30px', marginTop: '60px', zIndex: 3 }}>
+      <div className="carousel-nav" style={{ display: 'flex', gap: '30px', marginTop: '60px', zIndex: 3 }}>
         <motion.button 
           whileHover={{ scale: 1.1, background: 'var(--card-bg)' }}
           whileTap={{ scale: 0.9 }}
@@ -321,6 +271,139 @@ const CertificatesSection = ({ onOpenDetail }) => {
           />
         ))}
       </div>
+    <style>{`
+        #certificates {
+            transition: all 0.3s ease;
+        }
+        @media (max-width: 1200px) {
+            #certificates { padding: 100px 5% !important; }
+        }
+        @media (max-width: 1024px) {
+            .cert-3d-card:not(.active-front) {
+                display: none !important;
+            }
+            .certificates-container {
+                height: 550px !important;
+            }
+        }
+        @media (max-width: 768px) {
+            #certificates { 
+                padding: 60px 20px !important; 
+                min-height: auto !important; 
+            }
+            .section-title-premium {
+                font-size: 2.2rem !important;
+                text-align: left !important;
+                margin-bottom: 40px !important;
+            }
+            .certificates-container { 
+                height: auto !important;
+                min-height: 550px !important;
+                perspective: none !important;
+                display: block !important;
+            }
+            .cert-3d-card {
+                width: 100% !important;
+                max-width: 380px !important;
+                height: auto !important;
+                position: relative !important;
+                transform: none !important;
+                left: 0 !important;
+                top: 0 !important;
+                margin: 0 auto !important;
+            }
+            .certificate-card {
+                flex-direction: column !important;
+                padding: 0 !important;
+                gap: 0 !important;
+                align-items: stretch !important;
+                border-radius: 24px !important;
+                overflow: visible !important;
+                background: var(--card-bg) !important;
+                height: auto !important;
+                min-height: 580px !important;
+                display: flex !important;
+            }
+            .cert-image-container {
+                width: 100% !important;
+                height: 220px !important;
+                margin-bottom: 0 !important;
+                border-radius: 24px 24px 0 0 !important;
+                flex-shrink: 0 !important;
+                display: block !important;
+                background: linear-gradient(135deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.1) 100%) !important;
+                overflow: hidden !important;
+            }
+            .cert-image-container img {
+                object-fit: cover !important;
+                width: 100% !important;
+                height: 100% !important;
+                display: block !important;
+            }
+            .cert-content-wrapper {
+                padding: 24px 24px 0 24px !important;
+                margin-top: 0 !important;
+                width: 100% !important;
+                flex-shrink: 0 !important;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            .cert-title {
+                font-size: 1.4rem !important;
+                margin-bottom: 8px !important;
+                text-align: left !important;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                color: var(--text-primary) !important;
+            }
+            .cert-metadata {
+                justify-content: flex-start !important;
+                margin-bottom: 0 !important;
+                font-size: 0.85rem !important;
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            .cert-description {
+                padding: 16px 24px !important;
+                font-size: 0.9rem !important;
+                line-height: 1.6 !important;
+                margin-top: 0 !important;
+                margin-bottom: 0 !important;
+                text-align: left !important;
+                opacity: 0.8 !important;
+                display: block !important;
+                flex-grow: 1 !important;
+                visibility: visible !important;
+                color: var(--text-secondary) !important;
+            }
+            .cert-button-container {
+                width: 100% !important;
+                padding: 0 24px 24px !important;
+                margin-top: auto !important;
+                flex-shrink: 0 !important;
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            .cert-button-container button {
+                width: 100% !important;
+                padding: 15px !important;
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+        }
+        @media (max-width: 480px) {
+            .section-title-premium { font-size: 1.8rem !important; }
+            .cert-3d-card { max-width: 100% !important; }
+            .cert-image-container { height: 180px !important; }
+            .cert-title { font-size: 1.25rem !important; }
+            .cert-description { font-size: 0.85rem !important; }
+        }
+      `}</style>
     </section>
   );
 };

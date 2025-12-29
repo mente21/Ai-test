@@ -17,11 +17,15 @@ const AboutSection = () => {
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  // High-performance abstract placeholder
+  const DEFAULT_PLACEHOLDER = "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1000";
 
   // Dynamic Data Extraction
-  const dynamicAbout = aboutData?.[0] || {
+  const dynamicAbout = (!loading && aboutData?.[0]) ? aboutData[0] : {
     desc: "I am a digital architect specializing in high-performance web systems and AI-driven logic. My approach blends cinematic aesthetics with rigorous engineering to create interfaces that don't just work—they inspire.",
-    imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=800&q=80",
+    imageUrl: DEFAULT_PLACEHOLDER,
     gallery: [],
     stats: "5+ YEARS, 40+ BUILDS, 99% UPTIME"
   };
@@ -71,7 +75,8 @@ const AboutSection = () => {
     y.set(0);
   };
 
-  if (loading) return null;
+  // Removed immediate null return for smooth skeleton transition
+  // if (loading) return null;
 
   return (
     <section id="about" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} style={{ 
@@ -107,12 +112,16 @@ const AboutSection = () => {
               onMouseLeave={() => setIsHovering(false)}
             >
               <AnimatePresence mode='wait'>
+                {(!imageLoaded || loading) && (
+                  <div className="skeleton" style={{ width: '100%', height: '100%', position: 'absolute', inset: 0, zIndex: 1 }}></div>
+                )}
                 <motion.img 
                   key={currentImageIndex}
                   src={images[currentImageIndex]} 
                   alt="About" 
+                  onLoad={() => setImageLoaded(true)}
                   initial={{ opacity: 0, scale: 1.1 }}
-                  animate={{ opacity: 0.9, scale: 1 }}
+                  animate={{ opacity: (imageLoaded && !loading) ? 0.9 : 0, scale: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.5 }}
                   style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }} 
@@ -186,7 +195,14 @@ const AboutSection = () => {
         </h2>
         
         <div style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.8, maxWidth: '600px' }}>
-          {dynamicAbout.desc.split('\n\n').map((p, i) => (
+          {loading ? (
+             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <div className="skeleton" style={{ width: '100%', height: '20px', borderRadius: '4px' }}></div>
+                <div className="skeleton" style={{ width: '90%', height: '20px', borderRadius: '4px' }}></div>
+                <div className="skeleton" style={{ width: '95%', height: '20px', borderRadius: '4px' }}></div>
+                <div className="skeleton" style={{ width: '60%', height: '20px', borderRadius: '4px' }}></div>
+             </div>
+          ) : dynamicAbout.desc.split('\n\n').map((p, i) => (
             <p key={i} style={{ 
               marginBottom: i === 0 ? '24px' : '0px',
               fontFamily: "'Manrope', sans-serif",
@@ -221,6 +237,35 @@ const AboutSection = () => {
       </motion.div>
 
       <div style={{ position: 'absolute', bottom: '-100px', left: '50%', transform: 'translateX(-50%)', width: '50%', height: '200px', background: 'rgba(255, 107, 0, 0.1)', filter: 'blur(80px)', borderRadius: '50%', pointerEvents: 'none' }} />
+      
+      <style>{`
+        @media (max-width: 1024px) {
+          #about {
+            grid-template-columns: 1fr !important;
+            padding: 80px 5% !important;
+            gap: 50px !important;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          #about {
+            display: flex !important;
+            flex-direction: column !important;
+            padding: 60px 20px !important;
+            gap: 40px !important;
+          }
+          
+          /* Move image container to the top */
+          #about > div:first-child {
+            order: 1 !important;
+          }
+          
+          /* Move content to the bottom */
+          #about > div:nth-child(2) {
+            order: 2 !important;
+          }
+        }
+      `}</style>
     </section>
   );
 };

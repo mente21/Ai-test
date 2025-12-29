@@ -49,7 +49,11 @@ const ServicesSection = () => {
                 </h2>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px' }}>
+            <div className="services-grid" style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', 
+                gap: '30px' 
+            }}>
                 {services.map((service, idx) => (
                     <motion.div
                         key={service.id}
@@ -100,33 +104,25 @@ const ServicesSection = () => {
                             fontFamily: 'Anton', 
                             fontSize: '1.5rem', 
                             color: 'var(--text-primary)', 
-                            marginBottom: '12px',
-                            lineHeight: 1.1,
+                            margin: '0 0 16px 0',
+                            letterSpacing: '1px',
                             textTransform: 'uppercase'
-                        }}>
-                            {service.title}
-                        </h3>
+                        }}>{service.title}</h3>
 
                         <p style={{ 
-                            fontFamily: "'Manrope', sans-serif", 
+                            fontSize: '0.95rem', 
                             color: 'var(--text-secondary)', 
-                            fontSize: '0.9rem', 
-                            lineHeight: 1.6,
-                            marginBottom: '24px',
-                            flex: 1,
-                            opacity: 0.8
-                        }}>
-                            {service.desc}
-                        </p>
+                            lineHeight: 1.6, 
+                            marginBottom: '30px',
+                            fontFamily: "'Manrope', sans-serif"
+                        }}>{service.desc}</p>
 
                         {service.features && (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '30px' }}>
                                 {service.features.split(',').map((feature, i) => (
-                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <CheckCircle2 size={14} color="var(--accent-primary)" />
-                                        <span style={{ fontFamily: "'Manrope', sans-serif", fontSize: '0.85rem', color: 'var(--text-primary)' }}>
-                                            {feature.trim()}
-                                        </span>
+                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem', color: 'var(--text-primary)', opacity: 0.8 }}>
+                                        <CheckCircle2 size={16} style={{ color: 'var(--accent-primary)' }} />
+                                        <span>{feature.trim()}</span>
                                     </div>
                                 ))}
                             </div>
@@ -134,8 +130,8 @@ const ServicesSection = () => {
 
                         <div style={{ 
                             marginTop: 'auto', 
-                            borderTop: '1px solid var(--border-color)', 
-                            paddingTop: '20px',
+                            paddingTop: '30px', 
+                            borderTop: '1px solid var(--border-color)',
                             display: 'flex', 
                             justifyContent: 'space-between',
                             alignItems: 'center' 
@@ -164,6 +160,24 @@ const ServicesSection = () => {
                     </motion.div>
                 ))}
             </div>
+
+            <style>{`
+                @media (max-width: 1200px) {
+                    #services { padding-left: 120px !important; }
+                }
+                @media (max-width: 768px) {
+                    #services { padding: 80px 5% !important; }
+                    .services-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 20px !important;
+                    }
+                }
+                @media (max-width: 480px) {
+                    #services { padding: 60px 20px !important; }
+                    div[style*="padding: 30px"] { padding: 20px !important; }
+                    h3 { font-size: 1.3rem !important; }
+                }
+            `}</style>
         </section>
     );
 };

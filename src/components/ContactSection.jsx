@@ -217,6 +217,7 @@ const ContactSection = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ duration: 1 }}
                     viewport={{ once: true }}
+                    className="contact-form-card"
                     style={{
                         background: 'var(--card-bg)',
                         border: '1px solid var(--border-color)',
@@ -226,7 +227,7 @@ const ContactSection = () => {
                         boxShadow: '0 20px 40px rgba(0,0,0,0.05)'
                     }}
                 >
-                    <form onSubmit={handleEmailTransmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+                    <form onSubmit={handleEmailTransmit} className="contact-form" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
                         <div style={{ gridColumn: 'span 1' }}>
                             <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '12px', fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>Your Name</label>
                             <input 
@@ -417,6 +418,15 @@ const ContactSection = () => {
                     input, textarea {
                         font-size: 0.9rem !important;
                         padding: 14px !important;
+                    }
+
+                    .contact-form {
+                        grid-template-columns: 1fr !important;
+                        gap: 20px !important;
+                    }
+
+                    .contact-form div {
+                        grid-column: span 1 !important;
                     }
                     
                     /* Button */

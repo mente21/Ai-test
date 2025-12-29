@@ -104,11 +104,31 @@ body {
 }
 
 section {
-  padding: 100px 10%;
+  padding: 120px 10%;
   min-height: 80vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
+}
+
+@media (max-width: 1200px) {
+  section {
+    padding: 100px 8% 100px 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  section {
+    padding: 80px 5% 100px 5% !important;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  section {
+    padding: 60px 20px 80px 20px !important;
+  }
 }
 
 /* Typography */
@@ -814,5 +834,25 @@ p {
     right: 20px !important;
     width: 50px !important;
     height: 50px !important;
+  }
+}
+
+/* Skeleton Loading Animation */
+.skeleton {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.03) 25%,
+      rgba(255, 255, 255, 0.08) 37%,
+      rgba(255, 255, 255, 0.03) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
   }
 }

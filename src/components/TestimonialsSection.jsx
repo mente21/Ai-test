@@ -284,6 +284,70 @@ const TestimonialsSection = () => {
         </motion.button>
       </div>
 
+      <style>{`
+        @media (max-width: 768px) {
+            #testimonials { 
+                padding: 60px 18px !important; 
+                min-height: auto !important; 
+            }
+            .section-title-premium {
+                font-size: 2.2rem !important;
+                text-align: left !important;
+                margin-bottom: 50px !important;
+            }
+            div[style*="width: 550px"], div[style*="width: 90%"] {
+                width: 100% !important;
+                max-width: 380px !important;
+                height: auto !important;
+                min-height: 420px !important;
+                position: relative !important;
+                left: 0 !important;
+                top: 0 !important;
+                transform: none !important;
+            }
+            div[style*="perspective"] {
+                height: auto !important;
+                perspective: none !important;
+                display: flex !important;
+                justify-content: center !important;
+            }
+            div[style*="padding: 50px"] { 
+                padding: 50px 24px 30px !important; 
+                text-align: left !important;
+                align-items: flex-start !important;
+                border-radius: 28px !important;
+                flex-direction: column !important;
+            }
+            p[style*="fontSize: 1.25rem"], p { 
+                font-size: 1.05rem !important; 
+                line-height: 1.6 !important;
+                text-align: left !important;
+                margin-bottom: 30px !important;
+            }
+            /* User Metadata Layout */
+            div[style*="marginTop: 'auto'"] {
+                flex-direction: row !important;
+                gap: 15px !important;
+                align-items: center !important;
+                justify-content: flex-start !important;
+                width: 100% !important;
+                margin-top: auto !important;
+            }
+            /* Position Quote Icon at the very top clearly */
+            div[style*="width: 70px"] { 
+                width: 60px !important; 
+                height: 60px !important; 
+                left: 24px !important; 
+                top: -30px !important; 
+                transform: none !important;
+            }
+        }
+        @media (max-width: 480px) {
+            .section-title-premium { font-size: 1.8rem !important; }
+            div[style*="padding: 50px"] { padding: 45px 20px 25px !important; }
+            div[style*="width: 550px"] { max-width: 340px !important; }
+        }
+      `}</style>
     </section>
   );
 };

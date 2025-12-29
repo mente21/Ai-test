@@ -33,7 +33,13 @@ const EducationTimeline = ({ onOpenDetail }) => {
     }
   ];
 
-  const rawData = dbEducation.length > 0 ? dbEducation : staticEducation;
+  const rawData = dbEducation.length > 0 
+    ? [...dbEducation].sort((a, b) => {
+        const yearA = parseInt(a.year?.toString().split('-')[0]) || 0;
+        const yearB = parseInt(b.year?.toString().split('-')[0]) || 0;
+        return yearA - yearB;
+      }) 
+    : staticEducation;
   
   const getProgressColor = (index, total) => {
     if (total <= 1) return '#ff4d4d'; // Industrial Red
@@ -59,21 +65,22 @@ const EducationTimeline = ({ onOpenDetail }) => {
 
   return (
     <>
-    <section id="education" style={{ 
+    <section id="education" className="education-section" style={{ 
       padding: '120px 10% 120px 240px',
       background: 'var(--bg-color)',
       position: 'relative',
       overflow: 'hidden',
       transition: 'background 0.5s ease'
     }}>
-      <div style={{ textAlign: 'center', marginBottom: '100px', marginLeft: '-100px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '100px' }}>
         <h2 className="section-title-premium">
           <span className="section-title-accent">EDUCATION</span> 
           <span className="section-title-stroke">VIEW</span>
         </h2>
       </div>
 
-      <div style={{ position: 'relative', height: '550px', display: 'flex', alignItems: 'center' }}>
+      {/* Desktop Horizontal Timeline */}
+      <div className="desktop-timeline" style={{ position: 'relative', height: '550px', display: 'flex', alignItems: 'center' }}>
         {/* Timeline SVG Container */}
         <svg 
           width="100%" 
@@ -82,6 +89,7 @@ const EducationTimeline = ({ onOpenDetail }) => {
           preserveAspectRatio="none"
           style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)', overflow: 'visible', zIndex: 1 }}
         >
+          {/* ... (SVG content kept as is) ... */}
           <defs>
             <filter id="timeline-glow-massive" x="-20%" y="-500%" width="140%" height="1100%">
               <feGaussianBlur stdDeviation="20" result="blur" />
@@ -105,152 +113,100 @@ const EducationTimeline = ({ onOpenDetail }) => {
               )}
             </linearGradient>
           </defs>
-
-          {/* Static Background Rail (Always Visible) */}
           <line x1="0" y1="50" x2="1000" y2="50" stroke="var(--timeline-rail)" strokeWidth="2" strokeDasharray="10, 5" />
-
-          {/* Deep Aura Glow */}
-          <motion.path
-            d="M 0 50 L 1000 50"
-            stroke="url(#progress-gradient)"
-            strokeWidth="35"
-            fill="none"
-            strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            whileInView={{ pathLength: 1 }}
-            transition={{ duration: 5, ease: "linear" }}
-            style={{ opacity: 0.2 }}
-            filter="url(#timeline-glow-massive)"
-          />
-
-          {/* Main Thick Glowing Line */}
-          <motion.path
-            d="M 0 50 L 1000 50"
-            stroke="url(#progress-gradient)"
-            strokeWidth="12"
-            fill="none"
-            strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            whileInView={{ pathLength: 1 }}
-            transition={{ duration: 5, ease: "linear" }}
-            filter="url(#timeline-glow-massive)"
-            style={{ opacity: 0.95 }}
-          />
-
-          {/* High Contrast Core Wire */}
-          <motion.path
-            d="M 0 50 L 1000 50"
-            stroke="var(--text-primary)"
-            strokeWidth="0.8"
-            fill="none"
-            strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            whileInView={{ pathLength: 1 }}
-            transition={{ duration: 5, ease: "linear" }}
-            style={{ opacity: 0.4 }}
-          />
+          <motion.path d="M 0 50 L 1000 50" stroke="url(#progress-gradient)" strokeWidth="35" fill="none" strokeLinecap="round" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} transition={{ duration: 5, ease: "linear" }} style={{ opacity: 0.2 }} filter="url(#timeline-glow-massive)" />
+          <motion.path d="M 0 50 L 1000 50" stroke="url(#progress-gradient)" strokeWidth="12" fill="none" strokeLinecap="round" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} transition={{ duration: 5, ease: "linear" }} filter="url(#timeline-glow-massive)" style={{ opacity: 0.95 }} />
+          <motion.path d="M 0 50 L 1000 50" stroke="var(--text-primary)" strokeWidth="0.8" fill="none" strokeLinecap="round" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} transition={{ duration: 5, ease: "linear" }} style={{ opacity: 0.4 }} />
         </svg>
 
-        {/* Timeline Nodes */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          width: '100%', 
-          position: 'relative',
-          zIndex: 2 
-        }}>
-          {educationData.map((item, idx) => {
-            return (
-              <div key={idx} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '0' }}>
-                {/* Node Circle */}
-                <motion.div
-                  initial={{ scale: 0, backgroundColor: 'var(--bg-color)' }}
-                  whileInView={{ scale: 1, backgroundColor: item.color }}
-                  transition={{ type: 'spring', damping: 10, delay: idx * 1.25 }}
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '50%',
-                    boxShadow: `0 0 30px ${item.color}, 0 0 60px ${item.color}44`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    zIndex: 5,
-                    border: '4px solid var(--bg-color)'
-                  }}
-                  onClick={() => onOpenDetail(item)}
-                >
-                    <div style={{ width: '10px', height: '10px', background: 'white', borderRadius: '50%' }} />
-                </motion.div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', position: 'relative', zIndex: 2 }}>
+          {educationData.map((item, idx) => (
+            <div key={idx} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '0' }}>
+              <motion.div
+                initial={{ scale: 0, backgroundColor: 'var(--bg-color)' }}
+                whileInView={{ scale: 1, backgroundColor: item.color }}
+                transition={{ type: 'spring', damping: 10, delay: idx * 1.25 }}
+                style={{ width: '36px', height: '36px', borderRadius: '50%', boxShadow: `0 0 30px ${item.color}, 0 0 60px ${item.color}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 5, border: '4px solid var(--bg-color)' }}
+                onClick={() => onOpenDetail(item)}
+              >
+                  <div style={{ width: '10px', height: '10px', background: 'white', borderRadius: '50%' }} />
+              </motion.div>
 
-                {/* Content Card */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8, y: item.position === 'top' ? -40 : 40 }}
-                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ delay: idx * 1.25 + 0.5, type: 'spring', damping: 15 }}
-                  style={{
-                    position: 'absolute',
-                    [item.position === 'top' ? 'bottom' : 'top']: '80px',
-                    width: '280px',
-                    background: 'var(--card-bg)',
-                    backdropFilter: 'var(--glass-blur)',
-                    borderRadius: '24px',
-                    border: `1.5px solid ${item.color}44`,
-                    boxShadow: '0 25px 50px rgba(0,0,0,0.1)',
-                    transform: 'translateX(-50%)',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    transition: 'background 0.5s ease',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => onOpenDetail(item)}
-                >
-                  {item.position === 'bottom' && (
-                    <div style={{ width: '100%', height: '140px', overflow: 'hidden', background: 'rgba(0,0,0,0.1)' }}>
-                      <img src={item.image} alt={item.degree} style={{ width: '100%', height: '100%', objectFit: 'contain', opacity: 0.9 }} />
-                    </div>
-                  )}
-
-                  <div style={{ padding: '24px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '0.9rem', color: item.color, fontWeight: 600, fontFamily: "'Oswald', sans-serif", letterSpacing: '4px', marginBottom: '10px', textTransform: 'uppercase' }}>
-                      {item.year}
-                    </div>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 400, color: 'var(--text-primary)', marginBottom: '6px', fontFamily: 'Anton', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                      {item.degree}
-                    </div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 400, fontFamily: "'Manrope', sans-serif", letterSpacing: '1px' }}>
-                      {item.school}
-                    </div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, y: item.position === 'top' ? -40 : 40 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ delay: idx * 1.25 + 0.5, type: 'spring', damping: 15 }}
+                style={{ position: 'absolute', [item.position === 'top' ? 'bottom' : 'top']: '80px', width: '280px', background: 'var(--card-bg)', backdropFilter: 'var(--glass-blur)', borderRadius: '24px', border: `1.5px solid ${item.color}44`, boxShadow: '0 25px 50px rgba(0,0,0,0.1)', transform: 'translateX(-50%)', overflow: 'hidden', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
+                onClick={() => onOpenDetail(item)}
+              >
+                {item.position === 'bottom' && (
+                  <div style={{ width: '100%', height: '140px', overflow: 'hidden', background: 'rgba(0,0,0,0.1)' }}>
+                    <img src={item.image} alt={item.degree} style={{ width: '100%', height: '100%', objectFit: 'contain', opacity: 0.9 }} />
                   </div>
-
-                  {item.position === 'top' && (
-                    <div style={{ width: '100%', height: '140px', overflow: 'hidden', borderTop: `1px solid ${item.color}22`, background: 'rgba(0,0,0,0.1)' }}>
-                      <img src={item.image} alt={item.degree} style={{ width: '100%', height: '100%', objectFit: 'contain', opacity: 0.9 }} />
-                    </div>
-                  )}
-                </motion.div>
-                
-                {/* Vertical Connection */}
-                <motion.div
-                   initial={{ height: 0 }}
-                   whileInView={{ height: '80px' }}
-                   transition={{ delay: idx * 1.25 + 0.2 }}
-                   style={{
-                     width: '2px',
-                     background: `linear-gradient(to ${item.position === 'top' ? 'top' : 'bottom'}, ${item.color}, transparent)`,
-                     position: 'absolute',
-                     [item.position === 'top' ? 'bottom' : 'top']: '18px',
-                     zIndex: 1,
-                     opacity: 0.6
-                   }}
-                />
-              </div>
-            );
-          })}
+                )}
+                <div style={{ padding: '24px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.9rem', color: item.color, fontWeight: 600, fontFamily: "'Oswald', sans-serif", letterSpacing: '4px', marginBottom: '10px', textTransform: 'uppercase' }}>{item.year}</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 400, color: 'var(--text-primary)', marginBottom: '6px', fontFamily: 'Anton', textTransform: 'uppercase', letterSpacing: '1px' }}>{item.degree}</div>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 400, fontFamily: "'Manrope', sans-serif", letterSpacing: '1px' }}>{item.school}</div>
+                </div>
+                {item.position === 'top' && (
+                  <div style={{ width: '100%', height: '140px', overflow: 'hidden', borderTop: `1px solid ${item.color}22`, background: 'rgba(0,0,0,0.1)' }}>
+                    <img src={item.image} alt={item.degree} style={{ width: '100%', height: '100%', objectFit: 'contain', opacity: 0.9 }} />
+                  </div>
+                )}
+              </motion.div>
+              
+              <motion.div initial={{ height: 0 }} whileInView={{ height: '80px' }} transition={{ delay: idx * 1.25 + 0.2 }} style={{ width: '2px', background: `linear-gradient(to ${item.position === 'top' ? 'top' : 'bottom'}, ${item.color}, transparent)`, position: 'absolute', [item.position === 'top' ? 'bottom' : 'top']: '18px', zIndex: 1, opacity: 0.6 }} />
+            </div>
+          ))}
         </div>
       </div>
+
+      {/* Mobile Vertical Timeline */}
+      <div className="mobile-timeline-list" style={{ display: 'none', flexDirection: 'column', gap: '20px' }}>
+        {educationData.map((item, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            onClick={() => onOpenDetail(item)}
+            style={{
+              background: 'var(--card-bg)',
+              borderRadius: '20px',
+              border: `1px solid ${item.color}44`,
+              padding: '20px',
+              display: 'flex',
+              gap: '20px',
+              alignItems: 'center'
+            }}
+          >
+            <div style={{ width: '60px', height: '60px', borderRadius: '12px', overflow: 'hidden', background: 'rgba(0,0,0,0.2)', flexShrink: 0 }}>
+              <img src={item.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            <div>
+              <div style={{ fontSize: '0.7rem', color: item.color, fontWeight: 700, letterSpacing: '2px' }}>{item.year}</div>
+              <div style={{ fontSize: '1.1rem', fontFamily: 'Anton', textTransform: 'uppercase', margin: '4px 0' }}>{item.degree}</div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{item.school}</div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <style>{`
+        @media (max-width: 1200px) {
+          .education-section { padding-left: 120px !important; }
+        }
+        @media (max-width: 1024px) {
+          .desktop-timeline { display: none !important; }
+          .mobile-timeline-list { display: flex !important; }
+          .education-section { padding: 80px 5% !important; }
+          .education-section div[style*="margin-left: -100px"] { margin-left: 0 !important; }
+        }
+        @media (max-width: 768px) {
+          .education-section { padding: 60px 20px !important; }
+        }
+      `}</style>
     </section>
     </>
   );

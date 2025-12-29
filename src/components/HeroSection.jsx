@@ -60,11 +60,16 @@ const HeroSection = () => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  // High-performance abstract placeholder
+  const DEFAULT_PLACEHOLDER = "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1000";
+
   // Dynamic Data Extraction
-  const dynamicHome = homeData?.[0] || {
+  const dynamicHome = (!loading && homeData?.[0]) ? homeData[0] : {
     title: "CREATIVE ENGINEER",
     roles: "FRONTEND ARCHITECT, BACKEND NINJA, UI/UX DESIGNER, AI LOGIC ENGINEER",
-    imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=800&q=80"
+    imageUrl: DEFAULT_PLACEHOLDER
   };
 
   const roles = dynamicHome.roles.split(',').map(r => r.trim());
@@ -95,97 +100,120 @@ const HeroSection = () => {
     y.set(0);
   };
 
-  if (loading) return null; // Or a subtle loader
+  // Removed immediate null return for smooth skeleton transition
+  // if (loading) return null; 
 
   return (
     <section 
       onMouseMove={handleMouseMove} 
       onMouseLeave={handleMouseLeave}
+      className="hero-section"
       style={{ 
         position: 'relative', 
         minHeight: '100vh', 
         width: '100%',
         display: 'flex',
-        flexDirection: 'row',
         alignItems: 'center', 
         justifyContent: 'center',
         background: 'var(--bg-color)',
         overflow: 'hidden',
-        padding: '0 5% 0 120px',
-        gap: '40px',
         perspective: '2000px'
       }}
     >
       <GlowingLines />
       
-      <motion.div 
-        initial={{ opacity: 0, x: -30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-        style={{ 
-          zIndex: 3, 
-          flex: '0 1 600px',
-          display: 'flex', 
-          flexDirection: 'column', 
-          justifyContent: 'center',
-          position: 'relative'
-        }}
-      >
+      <div className="hero-grid-container" style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        maxWidth: '1400px',
+        gap: '40px',
+        zIndex: 3
+      }}>
+        <motion.div 
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="hero-text-content"
+          style={{ 
+            flex: '1 1 600px',
+            display: 'flex', 
+            flexDirection: 'column', 
+            justifyContent: 'center',
+            position: 'relative'
+          }}
+        >
+          <div className="hero-badge" style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
+            <div className="badge-line" style={{ width: '35px', height: '1.5px', background: 'var(--accent-primary)' }}></div>
+            <span style={{ color: 'var(--accent-primary)', letterSpacing: '8px', fontSize: '0.75rem', fontWeight: 900 }}>INDUSTRIAL DESIGN</span>
+          </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
-          <div style={{ width: '35px', height: '1.5px', background: 'var(--accent-primary)' }}></div>
-          <span style={{ color: 'var(--accent-primary)', letterSpacing: '8px', fontSize: '0.75rem', fontWeight: 900 }}>INDUSTRIAL DESIGN</span>
-        </div>
-
-        <h1 style={{ 
-          fontSize: 'clamp(3rem, 6vw, 5.5rem)', 
-          margin: 0, 
-          color: 'var(--text-primary)',
-          fontFamily: 'Anton',
-          textTransform: 'uppercase',
-          letterSpacing: '2px',
-          lineHeight: 1.1,
-          marginBottom: '20px',
-          textShadow: '0 10px 30px rgba(0,0,0,0.3)',
-          display: 'inline-block'
-        }}>
-          Mentesnot<br/>
-          Debele
-        </h1>
+        {loading ? (
+           <div className="skeleton" style={{ width: '300px', height: '80px', marginBottom: '20px', borderRadius: '8px' }}></div>
+        ) : (
+          <h1 style={{ 
+            fontSize: 'clamp(3rem, 6vw, 5.5rem)', 
+            margin: 0, 
+            color: 'var(--text-primary)',
+            fontFamily: 'Anton',
+            textTransform: 'uppercase',
+            letterSpacing: '2px',
+            lineHeight: 1.1,
+            marginBottom: '20px',
+            textShadow: '0 10px 30px rgba(0,0,0,0.3)',
+            display: 'inline-block'
+          }}>
+            Mentesnot<br/>
+            Debele
+          </h1>
+        )}
 
         <div style={{ margin: '20px 0' }}>
-          <AnimatePresence mode="wait">
-            <motion.div 
-              key={roles[roleIndex]}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 10 }}
-              transition={{ duration: 0.4 }}
-            >
-              <h2 style={{ 
-                  fontSize: 'clamp(2rem, 4vw, 3.5rem)', 
-                  color: 'var(--accent-primary)',
-                  margin: 0,
-                  background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary))',
-                  backgroundSize: '200% auto',
-                  WebkitBackgroundClip: 'text',
-                  backgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  animation: 'shine 4s linear infinite',
-                  letterSpacing: '2px'
-              }}>
-                {roles[roleIndex]}
-              </h2>
-            </motion.div>
-          </AnimatePresence>
+          {loading ? (
+             <div className="skeleton" style={{ width: '400px', height: '50px', borderRadius: '8px' }}></div>
+          ) : (
+            <AnimatePresence mode="wait">
+              <motion.div 
+                key={roles[roleIndex]}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.4 }}
+              >
+                <h2 style={{ 
+                    fontSize: 'clamp(2rem, 4vw, 3.5rem)', 
+                    color: 'var(--accent-primary)',
+                    margin: 0,
+                    background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary))',
+                    backgroundSize: '200% auto',
+                    WebkitBackgroundClip: 'text',
+                    backgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    animation: 'shine 4s linear infinite',
+                    letterSpacing: '2px'
+                }}>
+                  {roles[roleIndex]}
+                </h2>
+              </motion.div>
+            </AnimatePresence>
+          )}
         </div>
 
-        <p style={{ 
-          color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.8, maxWidth: '420px',
-          fontFamily: "'Manrope', sans-serif", fontWeight: 300, marginTop: '10px'
-        }}>
-          {dynamicHome.desc || "Specializing in premium high-performance digital architectures and high-impact industrial aesthetics for global brands."}
-        </p>
+        {loading ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
+            <div className="skeleton" style={{ width: '100%', height: '20px', borderRadius: '4px' }}></div>
+            <div className="skeleton" style={{ width: '80%', height: '20px', borderRadius: '4px' }}></div>
+          </div>
+        ) : (
+          <p style={{ 
+            color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.8, maxWidth: '420px',
+            fontFamily: "'Manrope', sans-serif", fontWeight: 300, marginTop: '10px'
+          }}>
+            {dynamicHome.desc || "Specializing in premium high-performance digital architectures and high-impact industrial aesthetics for global brands."}
+          </p>
+        )}
 
         <motion.div style={{ marginTop: '40px', display: 'flex', alignItems: 'center', gap: '20px' }}>
              <a href="#work" className="btn" style={{
@@ -203,9 +231,11 @@ const HeroSection = () => {
         initial={{ opacity: 0, scale: 0.9, rotateY: 20 }}
         animate={{ opacity: 1, scale: 1, rotateY: 0 }}
         transition={{ duration: 1.5, ease: "easeOut" }}
+        className="hero-image-wrapper"
         style={{ zIndex: 2, flex: '0 1 450px', display: 'flex', alignItems: 'center', justifyContent: 'center', perspective: '1500px' }}
       >
         <motion.div
+           className="hero-portrait-card"
            style={{ 
              rotateX, rotateY, 
              transformStyle: 'preserve-3d', 
@@ -224,10 +254,21 @@ const HeroSection = () => {
             display: 'flex', alignItems: 'center', justifyContent: 'center', transformStyle: 'preserve-3d'
           }}>
             <motion.div style={{ width: '100%', height: '100%', borderRadius: '16px', overflow: 'hidden', transform: 'translateZ(50px)', position: 'relative' }}>
+              {(!imageLoaded || loading) && (
+                <div className="skeleton" style={{ width: '100%', height: '100%', position: 'absolute', inset: 0, zIndex: 1 }}></div>
+              )}
               <motion.img 
                 src={dynamicHome.imageUrl} 
                 alt="Portrait"
-                style={{ width: '110%', height: '110%', objectFit: 'cover', opacity: 0.95, x: imageX, y: imageY, position: 'absolute', top: '-5%', left: '-5%' }}
+                onLoad={() => setImageLoaded(true)}
+                style={{ 
+                  width: '110%', height: '110%', 
+                  objectFit: 'cover', 
+                  opacity: imageLoaded && !loading ? 0.95 : 0, 
+                  x: imageX, y: imageY, 
+                  position: 'absolute', top: '-5%', left: '-5%',
+                  transition: 'opacity 0.5s ease'
+                }}
               />
               <motion.div 
                 animate={{ y: [-600, 600] }}
@@ -236,118 +277,65 @@ const HeroSection = () => {
               />
             </motion.div>
             <div style={{ position: 'absolute', inset: '-20px', background: 'radial-gradient(circle, var(--accent-primary) 0%, transparent 70%)', opacity: 0.1, filter: 'blur(60px)', transform: 'translateZ(-40px)', zIndex: -1 }} />
-            <motion.div style={{ position: 'absolute', bottom: '30px', fontFamily: 'Anton', color: 'var(--bg-color)', fontSize: '0.8rem', letterSpacing: '6px', padding: '10px 30px', background: 'var(--text-primary)', border: '1px solid var(--accent-primary)', borderRadius: '100px', zIndex: 10, transform: 'translateZ(100px)', textTransform: 'uppercase', boxShadow: '0 10px 30px rgba(0,0,0,0.2)' }}>
-              PRIME HUB
-            </motion.div>
           </div>
         </motion.div>
-      </motion.div>
+        </motion.div>
+      </div>
 
       <style>{`
         @keyframes shine { to { background-position: 200% center; } }
         
-        /* Desktop & Large Tablets */
+        .hero-section {
+          padding: 0 5% 0 120px !important;
+        }
+
         @media (max-width: 1100px) {
-          section { 
-            flex-direction: column !important; 
-            padding: 140px 5% 60px !important; 
-            gap: 60px !important; 
+          .hero-section { 
+            padding: 120px 5% 60px !important; 
           }
-          div[style*="flex"] { 
+          .hero-grid-container {
+            flex-direction: column !important;
+            gap: 60px !important;
+          }
+          .hero-text-content { 
             width: 100% !important; 
             flex: 1 1 auto !important; 
             text-align: center !important; 
+            align-items: center !important;
           }
+          .hero-badge { justify-content: center !important; }
         }
         
-        /* Tablets */
         @media (max-width: 768px) {
-          section {
-            padding: 120px 5% 40px !important;
-            gap: 40px !important;
-            min-height: auto !important;
+          .hero-section {
+            padding: 100px 20px 40px !important;
           }
-          
-          /* Text content */
+          .hero-grid-container {
+            gap: 0 !important;
+          }
           h1 {
-            font-size: clamp(2.5rem, 10vw, 4rem) !important;
-            margin-bottom: 15px !important;
+            font-size: clamp(2.5rem, 12vw, 4rem) !important;
           }
-          
-          h2 {
-            font-size: clamp(1.5rem, 6vw, 2.5rem) !important;
-          }
-          
-          p {
-            font-size: 0.95rem !important;
-            max-width: 100% !important;
-          }
-          
-          /* Portrait card */
-          div[style*="420px"] {
-            width: min(350px, 90vw) !important;
-            height: min(450px, 60vh) !important;
-          }
-          
-          /* Button */
-          a.btn {
-            padding: 12px 30px !important;
-            font-size: 0.8rem !important;
+          .hero-image-wrapper {
+            display: none !important;
+            position: absolute !important;
+            width: 0 !important;
+            height: 0 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            overflow: hidden !important;
           }
         }
         
-        /* Mobile */
         @media (max-width: 480px) {
-          section {
-            padding: 100px 4% 30px !important;
-            gap: 30px !important;
+          .hero-section {
+            padding: 80px 15px 30px !important;
           }
-          
-          /* Hide decorative line on mobile */
-          div[style*="width: 35px"] {
-            display: none !important;
-          }
-          
-          span[style*="INDUSTRIAL DESIGN"] {
-            font-size: 0.65rem !important;
-            letter-spacing: 4px !important;
-          }
-          
-          h1 {
-            font-size: 2.2rem !important;
-            line-height: 1.1 !important;
-          }
-          
-          h2 {
-            font-size: 1.4rem !important;
-          }
-          
-          p {
-            font-size: 0.9rem !important;
-            line-height: 1.6 !important;
-          }
-          
-          /* Portrait card */
-          div[style*="420px"] {
-            width: min(300px, 85vw) !important;
-            height: min(380px, 50vh) !important;
-            padding: 8px !important;
-          }
-          
-          /* Badge */
-          div[style*="PRIME HUB"] {
-            font-size: 0.7rem !important;
-            padding: 8px 20px !important;
-            letter-spacing: 4px !important;
-          }
-          
-          /* Button */
-          a.btn {
-            width: 100% !important;
-            justify-content: center !important;
-            padding: 12px 20px !important;
-            font-size: 0.75rem !important;
-          }
+          .badge-line { display: none !important; }
+          h1 { font-size: 2.2rem !important; }
+          h2 { font-size: 1.4rem !important; }
+          p { font-size: 0.9rem !important; }
+          .btn { width: 100% !important; }
         }
       `}</style>
     </section>

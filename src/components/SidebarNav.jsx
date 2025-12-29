@@ -30,12 +30,16 @@ const navItems = [
 ];
 
 const SidebarNav = () => {
-  const { data: homeData } = useCollection('home');
+  const { data: homeData, loading } = useCollection('home');
   const [hoveredItem, setHoveredItem] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [avatarLoaded, setAvatarLoaded] = useState(false);
   const navigate = useNavigate();
 
-  const sidebarImage = homeData?.[0]?.sidebarImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=800&q=80";
+  // High-performance abstract placeholder
+  const DEFAULT_PLACEHOLDER = "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=1000";
+
+  const sidebarImage = (!loading && homeData?.[0]?.sidebarImage) ? homeData[0].sidebarImage : DEFAULT_PLACEHOLDER;
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -96,10 +100,21 @@ const SidebarNav = () => {
           flexShrink: 0
         }}
       >
+        {(!avatarLoaded || loading) && (
+          <div className="skeleton" style={{ width: '100%', height: '100%', borderRadius: '50%' }}></div>
+        )}
         <img 
           src={sidebarImage} 
           alt="Profile" 
-          style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+          onLoad={() => setAvatarLoaded(true)}
+          style={{ 
+            width: '100%', 
+            height: '100%', 
+            borderRadius: '50%', 
+            objectFit: 'cover',
+            opacity: avatarLoaded && !loading ? 1 : 0,
+            transition: 'opacity 0.3s ease'
+          }}
         />
       </motion.div>
 

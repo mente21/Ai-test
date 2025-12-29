@@ -680,29 +680,29 @@ const StudioMode = () => {
                   className="studio-input"
                   value={formData.icon || ''}
                   onChange={e => handleInputChange('icon', e.target.value)}
-                  style={{ cursor: 'pointer', height: '50px', background: 'white', color: 'black' }}
+                  style={{ cursor: 'pointer' }}
                 >
-                  <option style={{ color: 'black', background: 'white' }} value="">Select an Icon</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaMobileAlt">Mobile App (Phone)</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaReact">React / React Native</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaGlobe">Web Development (Globe)</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaCode">Code / Programming</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaDatabase">Database / Backend</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaCloud">Cloud Services</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaPaintBrush">Design / UI/UX</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaBrain">AI / Machine Learning</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaShieldAlt">Security</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaServer">Server / DevOps</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaDesktop">Desktop App</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaRocket">Performance / Speed</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaTools">Maintenance / Tools</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaShoppingCart">E-Commerce</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaChartLine">Analytics / SEO</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaUsers">Consulting /  Team</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaPython">Python</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaNodeJs">Node.js</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaGamepad">Game Development</option>
-                  <option style={{ color: 'black', background: 'white' }} value="FaRobot">Automation</option>
+                  <option value="">Select an Icon</option>
+                  <option value="FaMobileAlt">Mobile App (Phone)</option>
+                  <option value="FaReact">React / React Native</option>
+                  <option value="FaGlobe">Web Development (Globe)</option>
+                  <option value="FaCode">Code / Programming</option>
+                  <option value="FaDatabase">Database / Backend</option>
+                  <option value="FaCloud">Cloud Services</option>
+                  <option value="FaPaintBrush">Design / UI/UX</option>
+                  <option value="FaBrain">AI / Machine Learning</option>
+                  <option value="FaShieldAlt">Security</option>
+                  <option value="FaServer">Server / DevOps</option>
+                  <option value="FaDesktop">Desktop App</option>
+                  <option value="FaRocket">Performance / Speed</option>
+                  <option value="FaTools">Maintenance / Tools</option>
+                  <option value="FaShoppingCart">E-Commerce</option>
+                  <option value="FaChartLine">Analytics / SEO</option>
+                  <option value="FaUsers">Consulting /  Team</option>
+                  <option value="FaPython">Python</option>
+                  <option value="FaNodeJs">Node.js</option>
+                  <option value="FaGamepad">Game Development</option>
+                  <option value="FaRobot">Automation</option>
                 </select>
                 
                 {/* Icon Preview */}
@@ -1214,7 +1214,16 @@ const StudioMode = () => {
                       {item.period && <p style={{ fontSize: '0.9rem', opacity: 0.6, fontFamily: "'Manrope', sans-serif" }}>{item.period}</p>}
                       {item.date && <p style={{ fontSize: '0.9rem', opacity: 0.6, fontFamily: "'Manrope', sans-serif" }}>{item.date}</p>}
 
-                      <p style={{ marginTop: '15px', lineHeight: '1.6', opacity: 0.8, fontFamily: "'Manrope', sans-serif" }}>{item.desc}</p>
+                      <p style={{ 
+                        marginTop: '15px', 
+                        lineHeight: '1.6', 
+                        opacity: 0.8, 
+                        fontFamily: "'Manrope', sans-serif",
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden'
+                      }}>{item.desc}</p>
                       
                       {item.tech && item.tech.length > 0 && (
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '15px' }}>
@@ -1412,16 +1421,16 @@ const StudioMode = () => {
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 12px;
           padding: 12px 16px;
-          color: #000;
-          -webkit-text-fill-color: #000;
+          color: #fff;
+          -webkit-text-fill-color: #fff;
           font-family: 'Manrope', sans-serif;
           font-size: 0.95rem;
           transition: 0.3s;
           width: 100%;
         }
         .studio-input::placeholder {
-          color: rgba(0, 0, 0, 0.4);
-          -webkit-text-fill-color: rgba(0, 0, 0, 0.4);
+          color: rgba(255, 255, 255, 0.4);
+          -webkit-text-fill-color: rgba(255, 255, 255, 0.4);
         }
         .studio-input:focus { border-color: #6366f1; outline: none; background: rgba(255, 255, 255, 0.08); }
         

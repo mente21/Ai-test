@@ -17,6 +17,8 @@ const ProjectCard = ({ project, index, onExpand }) => {
   ];
   const theme = themes[index % themes.length];
 
+  const [imageLoaded, setImageLoaded] = React.useState(false);
+
   return (
     <motion.div 
       layoutId={`card-${project.id || index}`}
@@ -73,12 +75,22 @@ const ProjectCard = ({ project, index, onExpand }) => {
         border: '1px solid var(--border-color)',
         zIndex: 1
       }}>
+        {!imageLoaded && (
+          <div className="skeleton" style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}></div>
+        )}
         <motion.img 
           layoutId={`image-${project.id || index}`}
           transition={{ duration: 0.6 }}
+          onLoad={() => setImageLoaded(true)}
           src={project.imageUrl || "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=600"} 
           alt={project.title} 
-          style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+          style={{ 
+            width: '100%', 
+            height: '100%', 
+            objectFit: 'contain',
+            opacity: imageLoaded ? 1 : 0,
+            transition: 'opacity 0.3s ease'
+          }} 
         />
         
         {/* Overlay buttons that show on hover */}
