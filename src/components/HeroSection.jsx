@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
-import { Github, Linkedin, Instagram, Twitter, ExternalLink, Mail, ArrowRight } from 'lucide-react';
+import { Github, Linkedin, Instagram, Twitter, ExternalLink, Mail, ArrowRight, FileText, Download } from 'lucide-react';
+
 import { useCollection } from '../hooks/useCollection';
 
 const GlowingLines = () => {
@@ -56,7 +57,9 @@ const GlowingLines = () => {
 
 const HeroSection = () => {
   const { data: homeData, loading } = useCollection('home');
+
   const [roleIndex, setRoleIndex] = useState(0);
+
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -218,13 +221,45 @@ const HeroSection = () => {
         <motion.div style={{ marginTop: '40px', display: 'flex', alignItems: 'center', gap: '20px' }}>
              <a href="#work" className="btn" style={{
                  padding: '14px 40px', border: '1.5px solid var(--text-primary)', color: 'var(--text-primary)',
-                 textTransform: 'uppercase', fontFamily: 'Anton', fontSize: '0.85rem', borderRadius: '4px',
-                 letterSpacing: '3px', display: 'inline-flex', alignItems: 'center', gap: '12px',
+                 textTransform: 'uppercase', fontFamily: "'Manrope', sans-serif", fontSize: '0.85rem', fontWeight: 700, borderRadius: '4px',
+                 letterSpacing: '2px', display: 'inline-flex', alignItems: 'center', gap: '12px',
                  transition: 'all 0.3s ease', background: 'transparent', textDecoration: 'none'
              }}>
                  VIEW ARCHIVE <ArrowRight size={16} />
              </a>
+             <motion.button 
+               onClick={() => {
+                 const link = document.createElement('a');
+                 link.href = '/Mentesnot_Debele_Resume.pdf';
+                 link.download = 'Mentesnot_Debele_Resume.pdf';
+                 document.body.appendChild(link);
+                 link.click();
+                 document.body.removeChild(link);
+               }}
+               whileHover={{ scale: 1.05, backgroundColor: 'var(--accent-primary)', color: 'black' }}
+               whileTap={{ scale: 0.95 }}
+               style={{
+                 padding: '14px 40px', 
+                 background: 'var(--accent-primary)', 
+                 color: 'black',
+                 border: 'none',
+                 textTransform: 'uppercase', 
+                 fontFamily: "'Manrope', sans-serif", 
+                 fontSize: '0.85rem', 
+                 fontWeight: 800,
+                 borderRadius: '4px',
+                 letterSpacing: '2px', 
+                 display: 'inline-flex', 
+                 alignItems: 'center', 
+                 gap: '12px',
+                 cursor: 'pointer',
+                 boxShadow: '0 10px 30px rgba(255, 107, 0, 0.2)'
+               }}
+             >
+               GET RESUME <Download size={16} />
+             </motion.button>
         </motion.div>
+
       </motion.div>
 
       <motion.div 

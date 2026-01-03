@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { useCollection } from '../hooks/useCollection';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileText, ArrowRight, Download } from 'lucide-react';
+
 
 const AboutSection = () => {
   const { data: aboutData, loading } = useCollection('about');
+
+
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -234,7 +237,37 @@ const AboutSection = () => {
               </div>
             ))}
         </div>
+
+        <motion.button
+          onClick={() => {
+            const link = document.createElement('a');
+            link.href = '/Mentesnot_Debele_Resume.pdf';
+            link.download = 'Mentesnot_Debele_Resume.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }}
+          whileHover={{ x: 10 }}
+          style={{
+            marginTop: '40px',
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--accent-primary)',
+            fontFamily: "'Manrope', sans-serif",
+            fontSize: '0.9rem',
+            fontWeight: 700,
+            letterSpacing: '2px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            cursor: 'pointer',
+            padding: 0
+          }}
+        >
+          DOWNLOAD FULL RESUME <Download size={20} />
+        </motion.button>
       </motion.div>
+
 
       <div style={{ position: 'absolute', bottom: '-100px', left: '50%', transform: 'translateX(-50%)', width: '50%', height: '200px', background: 'rgba(255, 107, 0, 0.1)', filter: 'blur(80px)', borderRadius: '50%', pointerEvents: 'none' }} />
       

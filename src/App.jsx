@@ -17,6 +17,10 @@ import SidebarNav from './components/SidebarNav';
 import ServicesSection from './components/ServicesSection';
 import ContactSection from './components/ContactSection';
 
+import FloatingDownloadButton from './components/FloatingDownloadButton';
+
+
+
 // Hooks
 import { useProjects } from './hooks/useProjects';
 import { useCollection } from './hooks/useCollection';
@@ -691,8 +695,8 @@ const PortfolioHome = () => {
                            style={{
                              width: '100%', padding: '20px',
                              background: 'var(--text-primary)', color: 'var(--bg-color)',
-                             borderRadius: '16px', fontFamily: 'Anton', fontSize: '1.1rem',
-                             letterSpacing: '3px', fontWeight: 900, textTransform: 'uppercase',
+                             borderRadius: '16px', fontFamily: "'Manrope', sans-serif", fontSize: '1.1rem',
+                             letterSpacing: '2px', fontWeight: 800, textTransform: 'uppercase',
                              textAlign: 'center', textDecoration: 'none', display: 'flex',
                              alignItems: 'center', justifyContent: 'center', gap: '12px'
                            }}
@@ -785,11 +789,15 @@ const PortfolioHome = () => {
 function App() {
   return (
     <Router>
+      <FloatingDownloadButton />
       <Routes>
         <Route path="/" element={<PortfolioHome />} />
+
         <Route path="/studio" element={<StudioMode />} />
+
       </Routes>
     </Router>
+
   );
 }
 
